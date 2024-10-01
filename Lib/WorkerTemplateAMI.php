@@ -60,9 +60,9 @@ class WorkerTemplateAMI extends WorkerBase
     /**
      * Setup ami events filter
      *
-     * @return array
+     * @return void
      */
-    private function setFilter(): array
+    private function setFilter(): void
     {
         // Ping event to check module is allive
         $pingTube = $this->makePingTubeName(self::class);
@@ -71,7 +71,7 @@ class WorkerTemplateAMI extends WorkerBase
 
         // Interception event - it is example event. It happens when PBX receive inbound call
         $params = ['Operation' => 'Add', 'Filter' => 'UserEvent: Interception'];
-        return $this->am->sendRequestTimeout('Filter', $params);
+        $this->am->sendRequestTimeout('Filter', $params);
     }
 
     /**

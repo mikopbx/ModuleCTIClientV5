@@ -1,4 +1,4 @@
-{{ form('module-template/module-template/save', 'role': 'form', 'class': 'ui large form','id':'module-template-form') }}
+<form method="post" action="module-template/module-template/save" class="ui large form" id="module-template-form">
     {{ form.render('id') }}
 
     <div class="ui ribbon label">
@@ -49,4 +49,4 @@
     </div>
 
     {{ partial("partials/submitbutton",['indexurl':'module-template/module-template/index']) }}
-{{ endform() }}
+</form>
