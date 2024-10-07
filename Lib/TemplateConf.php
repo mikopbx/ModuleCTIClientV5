@@ -32,7 +32,7 @@ class TemplateConf extends ConfigClass
      *
      * @param mixed $data
      */
-    public function modelsEventChangeData(mixed $data): void
+    public function modelsEventChangeData($data): void
     {
         // f.e. if somebody changes PBXLanguage, we will restart all workers
         if (
