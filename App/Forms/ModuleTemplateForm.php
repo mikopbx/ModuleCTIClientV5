@@ -1,4 +1,5 @@
 <?php
+
 /*
  * MikoPBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
@@ -29,8 +30,7 @@ use Phalcon\Forms\Element\Select;
 
 class ModuleTemplateForm extends BaseForm
 {
-
-    public function initialize($entity = null, $options = null) :void
+    public function initialize($entity = null, $options = null): void
     {
 
         // id
@@ -40,7 +40,10 @@ class ModuleTemplateForm extends BaseForm
         $this->add(new Text('text_field'));
 
         // text_area_field
-        $this->addTextArea('text_area_field',$entity->text_area_field??'',90,
+        $this->addTextArea(
+            'text_area_field',
+            $entity->text_area_field ?? '',
+            90,
             ['placeholder' => 'There is placeholder text']
         );
 
@@ -55,18 +58,10 @@ class ModuleTemplateForm extends BaseForm
         ]));
 
         // checkbox_field
-        $checkAr = ['value' => null];
-        if ($entity->checkbox_field) {
-            $checkAr = ['checked' => 'checked', 'value' => null];
-        }
-        $this->add(new Check('checkbox_field', $checkAr));
+        $this->addCheckBox('checkbox_field', intval($entity->checkbox_field) === 1);
 
         // toggle_field
-        $checkAr = ['value' => null];
-        if ($entity->toggle_field) {
-            $checkAr = ['checked' => 'checked', 'value' => null];
-        }
-        $this->add(new Check('toggle_field', $checkAr));
+        $this->addCheckBox('toggle_field', intval($entity->toggle_field) === 1);
 
         // dropdown_field
         $providers = new Select('dropdown_field', $options['providers'], [
@@ -78,5 +73,23 @@ class ModuleTemplateForm extends BaseForm
             'class'    => 'ui selection dropdown provider-select',
         ]);
         $this->add($providers);
+    }
+
+    /**
+     * Adds a checkbox to the form field with the given name.
+     * Can be deleted if the module depends on MikoPBX later than 2024.3.0
+     *
+     * @param string $fieldName The name of the form field.
+     * @param bool $checked Indicates whether the checkbox is checked by default.
+     * @param string $checkedValue The value assigned to the checkbox when it is checked.
+     * @return void
+     */
+    public function addCheckBox(string $fieldName, bool $checked, string $checkedValue = 'on'): void
+    {
+        $checkAr = ['value' => null];
+        if ($checked) {
+            $checkAr = ['checked' => $checkedValue,'value' => $checkedValue];
+        }
+        $this->add(new Check($fieldName, $checkAr));
     }
 }
