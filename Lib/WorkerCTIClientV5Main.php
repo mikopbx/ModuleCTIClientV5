@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\Lib;
+namespace Modules\ModuleCTIClientV5\Lib;
 
 
 use MikoPBX\Common\Handlers\CriticalErrorsHandler;
@@ -27,11 +27,11 @@ use MikoPBX\Core\Workers\WorkerBase;
 require_once 'Globals.php';
 
 /**
- * Class ModuleTemplate
+ * Class ModuleCTIClientV5
  */
-class WorkerTemplateMain extends WorkerBase
+class WorkerCTIClientV5Main extends WorkerBase
 {
-    protected TemplateMain $templateMain;
+    protected CTIClientV5Main $templateMain;
 
     /**
      * Start point for the worker.
@@ -41,7 +41,7 @@ class WorkerTemplateMain extends WorkerBase
      */
     public function start(array $argv): void
     {
-        $this->templateMain = new TemplateMain();
+        $this->templateMain = new CTIClientV5Main();
         $client = new BeanstalkClient(self::class);
         $client->subscribe($this->makePingTubeName(self::class), [$this, 'pingCallBack']);
         $client->subscribe(self::class, [$this, 'beanstalkCallback']);
@@ -63,7 +63,7 @@ class WorkerTemplateMain extends WorkerBase
 }
 
 // Start worker process
-$workerClassname = WorkerTemplateMain::class;
+$workerClassname = WorkerCTIClientV5Main::class;
 if (isset($argv) && count($argv) > 1) {
     cli_set_process_title($workerClassname);
     try {

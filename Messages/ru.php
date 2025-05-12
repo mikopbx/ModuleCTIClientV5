@@ -18,10 +18,10 @@
  */
 
 return [
-	'repModuleTemplate'         => 'Модуль шаблон - %repesent%',
-	'mo_ModuleModuleTemplate'   => 'Модуль шаблон',
-    'BreadcrumbModuleTemplate'  => 'Шаблонный модуль',
-    'SubHeaderModuleTemplate'   => 'Пример для создания собственных модулей',
+	'repModuleCTIClientV5'         => 'Модуль шаблон - %repesent%',
+	'mo_ModuleModuleCTIClientV5'   => 'Модуль шаблон',
+    'BreadcrumbModuleCTIClientV5'  => 'Шаблонный модуль',
+    'SubHeaderModuleCTIClientV5'   => 'Пример для создания собственных модулей',
     'module_template_AddNewRecord'  => 'Добавить',
     'module_template_TextFieldLabel'        => 'Пример текстового поля',
     'module_template_TextAreaFieldLabel'    => 'Пример многостраничного поля',

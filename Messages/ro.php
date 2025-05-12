@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Șablon de modul - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Șablon de modul',
-    'BreadcrumbModuleTemplate' => 'Modul șablon',
-    'SubHeaderModuleTemplate' => 'Exemplu pentru crearea propriilor module',
+    'repModuleCTIClientV5' => 'Șablon de modul - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Șablon de modul',
+    'BreadcrumbModuleCTIClientV5' => 'Modul șablon',
+    'SubHeaderModuleCTIClientV5' => 'Exemplu pentru crearea propriilor module',
     'module_template_AddNewRecord' => 'Adăuga',
     'module_template_TextFieldLabel' => 'Exemplu de câmp text',
     'module_template_TextAreaFieldLabel' => 'Exemplu de câmp cu mai multe pagini',

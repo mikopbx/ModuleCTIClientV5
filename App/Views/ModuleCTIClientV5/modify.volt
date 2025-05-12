@@ -1,4 +1,4 @@
-<form method="post" action="module-template/module-template/save" class="ui large form" id="module-template-form">
+<form method="post" action="modulecticlient-v5/modulecticlient-v5/save" class="ui large form" id="modulecticlient-v5-form">
     {{ form.render('id') }}
 
     <div class="ui ribbon label">
@@ -48,5 +48,5 @@
         {{ form.render('dropdown_field') }}
     </div>
 
-    {{ partial("partials/submitbutton",['indexurl':'module-template/module-template/index']) }}
+    {{ partial("partials/submitbutton",['indexurl':'modulecticlient-v5/modulecticlient-v5/index']) }}
 </form>

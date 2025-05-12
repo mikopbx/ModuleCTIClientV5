@@ -1,1 +1,0 @@
-{{ link_to("module-template/module-template/modify", '<i class="gear icon"></i>  '~t._('module_template_ChangeRecord'), "class": "ui blue button", "id":"change-record") }}

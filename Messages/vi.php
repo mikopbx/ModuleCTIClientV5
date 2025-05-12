@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Mô-đun mẫu - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Mô-đun mẫu',
-    'BreadcrumbModuleTemplate' => 'Mô-đun mẫu',
-    'SubHeaderModuleTemplate' => 'Ví dụ để tạo mô-đun của riêng bạn',
+    'repModuleCTIClientV5' => 'Mô-đun mẫu - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Mô-đun mẫu',
+    'BreadcrumbModuleCTIClientV5' => 'Mô-đun mẫu',
+    'SubHeaderModuleCTIClientV5' => 'Ví dụ để tạo mô-đun của riêng bạn',
     'module_template_AddNewRecord' => 'Thêm vào',
     'module_template_TextFieldLabel' => 'Ví dụ về trường văn bản',
     'module_template_TextAreaFieldLabel' => 'Ví dụ về trường nhiều trang',

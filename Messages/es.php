@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Plantilla de módulo - %representante%',
-    'mo_ModuleModuleTemplate' => 'Plantilla de módulo',
-    'BreadcrumbModuleTemplate' => 'Módulo de plantilla',
-    'SubHeaderModuleTemplate' => 'Ejemplo para crear tus propios módulos',
+    'repModuleCTIClientV5' => 'Plantilla de módulo - %representante%',
+    'mo_ModuleModuleCTIClientV5' => 'Plantilla de módulo',
+    'BreadcrumbModuleCTIClientV5' => 'Módulo de plantilla',
+    'SubHeaderModuleCTIClientV5' => 'Ejemplo para crear tus propios módulos',
     'module_template_AddNewRecord' => 'Agregar',
     'module_template_TextFieldLabel' => 'Ejemplo de campo de texto',
     'module_template_TextAreaFieldLabel' => 'Ejemplo de un campo de varias páginas',

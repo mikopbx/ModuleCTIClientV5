@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'モジュールテンプレート - %repesent%',
-    'mo_ModuleModuleTemplate' => 'モジュールテンプレート',
-    'BreadcrumbModuleTemplate' => 'テンプレートモジュール',
-    'SubHeaderModuleTemplate' => '独自のモジュールを作成する例',
+    'repModuleCTIClientV5' => 'モジュールテンプレート - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'モジュールテンプレート',
+    'BreadcrumbModuleCTIClientV5' => 'テンプレートモジュール',
+    'SubHeaderModuleCTIClientV5' => '独自のモジュールを作成する例',
     'module_template_AddNewRecord' => '追加',
     'module_template_TextFieldLabel' => 'テキストフィールドの例',
     'module_template_TextAreaFieldLabel' => '複数ページのフィールドの例',

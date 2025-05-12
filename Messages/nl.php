@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Modulesjabloon - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Modulesjabloon',
-    'BreadcrumbModuleTemplate' => 'Sjabloonmodule',
-    'SubHeaderModuleTemplate' => 'Voorbeeld voor het maken van uw eigen modules',
+    'repModuleCTIClientV5' => 'Modulesjabloon - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Modulesjabloon',
+    'BreadcrumbModuleCTIClientV5' => 'Sjabloonmodule',
+    'SubHeaderModuleCTIClientV5' => 'Voorbeeld voor het maken van uw eigen modules',
     'module_template_AddNewRecord' => 'Toevoegen',
     'module_template_TextFieldLabel' => 'Voorbeeld van een tekstveld',
     'module_template_TextAreaFieldLabel' => 'Voorbeeld van een veld met meerdere pagina\'s',

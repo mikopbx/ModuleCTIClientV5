@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => '模块模板 - %repesent%',
-    'mo_ModuleModuleTemplate' => '模块模板',
-    'BreadcrumbModuleTemplate' => '模板模块',
-    'SubHeaderModuleTemplate' => '创建您自己的模块的示例',
+    'repModuleCTIClientV5' => '模块模板 - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => '模块模板',
+    'BreadcrumbModuleCTIClientV5' => '模板模块',
+    'SubHeaderModuleCTIClientV5' => '创建您自己的模块的示例',
     'module_template_AddNewRecord' => '添加',
     'module_template_TextFieldLabel' => '文本字段示例',
     'module_template_TextAreaFieldLabel' => '多页字段示例',

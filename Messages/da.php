@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Modulskabelon - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Modul skabelon',
-    'BreadcrumbModuleTemplate' => 'Skabelon modul',
-    'SubHeaderModuleTemplate' => 'Eksempel på oprettelse af dine egne moduler',
+    'repModuleCTIClientV5' => 'Modulskabelon - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Modul skabelon',
+    'BreadcrumbModuleCTIClientV5' => 'Skabelon modul',
+    'SubHeaderModuleCTIClientV5' => 'Eksempel på oprettelse af dine egne moduler',
     'module_template_AddNewRecord' => 'Tilføje',
     'module_template_TextFieldLabel' => 'Eksempel på tekstfelt',
     'module_template_TextAreaFieldLabel' => 'Eksempel på et felt med flere sider',

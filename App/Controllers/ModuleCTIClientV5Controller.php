@@ -17,17 +17,17 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\App\Controllers;
+namespace Modules\ModuleCTIClientV5\App\Controllers;
 use MikoPBX\AdminCabinet\Controllers\BaseController;
 use MikoPBX\AdminCabinet\Providers\AssetProvider;
 use MikoPBX\Common\Models\Providers;
 use MikoPBX\Modules\PbxExtensionUtils;
-use Modules\ModuleTemplate\App\Forms\ModuleTemplateForm;
-use Modules\ModuleTemplate\Models\ModuleTemplate;
+use Modules\ModuleCTIClientV5\App\Forms\ModuleCTIClientV5Form;
+use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
 
-class ModuleTemplateController extends BaseController
+class ModuleCTIClientV5Controller extends BaseController
 {
-    private string $moduleUniqueID = 'ModuleTemplate';
+    private string $moduleUniqueID = 'ModuleCTIClientV5';
     private string $moduleDir;
 
     /**
@@ -49,13 +49,13 @@ class ModuleTemplateController extends BaseController
     public function indexAction(): void
     {
         $headerCollectionCSS = $this->assets->collection(AssetProvider::HEADER_CSS);
-        $headerCollectionCSS->addCss('css/cache/'.$this->moduleUniqueID.'/module-template-index.css', true);
+        $headerCollectionCSS->addCss('css/cache/'.$this->moduleUniqueID.'/modulecticlient-v5-index.css', true);
 
         // Add JavaScript files to the footer collection
         $footerCollectionJS = $this->assets->collection(AssetProvider::FOOTER_JS);
-        $footerCollectionJS->addJs('js/cache/'.$this->moduleUniqueID.'/module-template-index.js', true);
+        $footerCollectionJS->addJs('js/cache/'.$this->moduleUniqueID.'/modulecticlient-v5-index.js', true);
 
-        $this->view->pick('Modules/'.$this->moduleUniqueID.'/ModuleTemplate/index');
+        $this->view->pick('Modules/'.$this->moduleUniqueID.'/ModuleCTIClientV5/index');
     }
 
     /**
@@ -69,12 +69,12 @@ class ModuleTemplateController extends BaseController
         $footerCollectionJS = $this->assets->collection(AssetProvider::FOOTER_JS);
         $footerCollectionJS
             ->addJs('js/pbx/main/form.js', true)
-            ->addJs('js/cache/'.$this->moduleUniqueID.'/module-template-modify.js', true);
+            ->addJs('js/cache/'.$this->moduleUniqueID.'/modulecticlient-v5-modify.js', true);
 
         // Retrieve or create new module settings
-        $settings = ModuleTemplate::findFirst();
+        $settings = ModuleCTIClientV5::findFirst();
         if ($settings === null) {
-            $settings = new ModuleTemplate();
+            $settings = new ModuleCTIClientV5();
         }
 
         // Create options array for form
@@ -88,9 +88,9 @@ class ModuleTemplateController extends BaseController
         }
         $options['providers']=$providersList;
 
-        $this->view->form = new ModuleTemplateForm($settings, $options);
+        $this->view->form = new ModuleCTIClientV5Form($settings, $options);
 
-        $this->view->pick('Modules/'.$this->moduleUniqueID.'/ModuleTemplate/modify');
+        $this->view->pick('Modules/'.$this->moduleUniqueID.'/ModuleCTIClientV5/modify');
     }
 
 
@@ -105,9 +105,9 @@ class ModuleTemplateController extends BaseController
             return;
         }
         $data = $this->request->getPost();
-        $record = ModuleTemplate::findFirstById($data['id']);
+        $record = ModuleCTIClientV5::findFirstById($data['id']);
         if ($record === null) {
-            $record = new ModuleTemplate();
+            $record = new ModuleCTIClientV5();
         }
         foreach ($record as $key => $value) {
             switch ($key) {
@@ -141,9 +141,9 @@ class ModuleTemplateController extends BaseController
      */
     public function deleteAction(string $recordId): void
     {
-        $record = ModuleTemplate::findFirstById($recordId);
+        $record = ModuleCTIClientV5::findFirstById($recordId);
         if ($record !== null) {
-            $this->deleteEntity($record,'module-template/module-template/index');
+            $this->deleteEntity($record,'modulecticlient-v5/modulecticlient-v5/index');
         }
     }
 

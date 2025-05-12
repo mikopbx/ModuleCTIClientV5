@@ -1,0 +1,1 @@
+{{ link_to("modulecticlient-v5/modulecticlient-v5/modify", '<i class="gear icon"></i>  '~t._('module_template_ChangeRecord'), "class": "ui blue button", "id":"change-record") }}

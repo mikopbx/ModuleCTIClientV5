@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'მოდულის შაბლონი - %repesent%',
-    'mo_ModuleModuleTemplate' => 'მოდულის შაბლონი',
-    'BreadcrumbModuleTemplate' => 'შაბლონის მოდული',
-    'SubHeaderModuleTemplate' => 'მაგალითი საკუთარი მოდულების შესაქმნელად',
+    'repModuleCTIClientV5' => 'მოდულის შაბლონი - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'მოდულის შაბლონი',
+    'BreadcrumbModuleCTIClientV5' => 'შაბლონის მოდული',
+    'SubHeaderModuleCTIClientV5' => 'მაგალითი საკუთარი მოდულების შესაქმნელად',
     'module_template_AddNewRecord' => 'დამატება',
     'module_template_TextFieldLabel' => 'ტექსტური ველის მაგალითი',
     'module_template_TextAreaFieldLabel' => 'მრავალგვერდიანი ველის მაგალითი',

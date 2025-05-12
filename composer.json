@@ -1,13 +1,13 @@
 {
     "name": "mikopbx/moduletemplate",
-    "description": "ModuleTemplate",
+    "description": "ModuleCTIClientV5",
     "require": {
         "php": "^7.4 || ^8.0",
         "mikopbx/core": ">=2023.2.150"
     },
     "autoload": {
         "psr-4": {
-            "Modules\\ModuleTemplate\\": "/"
+            "Modules\\ModuleCTIClientV5\\": "/"
         }
     },
     "type": "application",
@@ -23,7 +23,7 @@
         "uc"
     ],
     "license": "GPL-3.0-or-later",
-    "homepage": "https://github.com/mikopbx/ModuleTemplate",
+    "homepage": "https://github.com/mikopbx/ModuleCTIClientV5",
     "support": {
         "email": "help@mikopbx.com",
         "wiki": "https://wiki.mikopbx.com",

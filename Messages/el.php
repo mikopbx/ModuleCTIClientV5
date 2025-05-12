@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Πρότυπο μονάδας - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Πρότυπο ενότητας',
-    'BreadcrumbModuleTemplate' => 'Μονάδα προτύπου',
-    'SubHeaderModuleTemplate' => 'Παράδειγμα για τη δημιουργία των δικών σας λειτουργικών μονάδων',
+    'repModuleCTIClientV5' => 'Πρότυπο μονάδας - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Πρότυπο ενότητας',
+    'BreadcrumbModuleCTIClientV5' => 'Μονάδα προτύπου',
+    'SubHeaderModuleCTIClientV5' => 'Παράδειγμα για τη δημιουργία των δικών σας λειτουργικών μονάδων',
     'module_template_AddNewRecord' => 'Προσθήκη',
     'module_template_TextFieldLabel' => 'Παράδειγμα πεδίου κειμένου',
     'module_template_TextAreaFieldLabel' => 'Παράδειγμα πεδίου πολλών σελίδων',

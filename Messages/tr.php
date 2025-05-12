@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Modül şablonu - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Modül şablonu',
-    'BreadcrumbModuleTemplate' => 'Şablon modülü',
-    'SubHeaderModuleTemplate' => 'Kendi modüllerinizi oluşturma örneği',
+    'repModuleCTIClientV5' => 'Modül şablonu - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Modül şablonu',
+    'BreadcrumbModuleCTIClientV5' => 'Şablon modülü',
+    'SubHeaderModuleCTIClientV5' => 'Kendi modüllerinizi oluşturma örneği',
     'module_template_AddNewRecord' => 'Eklemek',
     'module_template_TextFieldLabel' => 'Metin alanı örneği',
     'module_template_TextAreaFieldLabel' => 'Çok sayfalı alan örneği',

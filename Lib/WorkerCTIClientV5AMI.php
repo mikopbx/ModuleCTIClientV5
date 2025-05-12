@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\Lib;
+namespace Modules\ModuleCTIClientV5\Lib;
 
 use MikoPBX\Common\Handlers\CriticalErrorsHandler;
 use MikoPBX\Core\Asterisk\AsteriskManager;
@@ -30,10 +30,10 @@ require_once 'Globals.php';
 /**
  * Worker class for Template AMI.
  */
-class WorkerTemplateAMI extends WorkerBase
+class WorkerCTIClientV5AMI extends WorkerBase
 {
     protected AsteriskManager $am;
-    protected TemplateMain $templateMain;
+    protected CTIClientV5Main $templateMain;
 
     /**
      * Starts the listener work.
@@ -42,7 +42,7 @@ class WorkerTemplateAMI extends WorkerBase
      */
     public function start(array $argv): void
     {
-        $this->templateMain = new TemplateMain();
+        $this->templateMain = new CTIClientV5Main();
         $this->am = Util::getAstManager();
         $this->setFilter();
         $this->am->addEventHandler("userevent", [$this, "callback"]);
@@ -95,7 +95,7 @@ class WorkerTemplateAMI extends WorkerBase
 }
 
 // Start worker process
-$workerClassname = WorkerTemplateAMI::class;
+$workerClassname = WorkerCTIClientV5AMI::class;
 if (isset($argv) && count($argv) > 1) {
     cli_set_process_title($workerClassname);
     try {

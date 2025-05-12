@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\Setup;
+namespace Modules\ModuleCTIClientV5\Setup;
 
 use MikoPBX\Modules\Setup\PbxExtensionSetupBase;
 
@@ -25,7 +25,7 @@ use MikoPBX\Modules\Setup\PbxExtensionSetupBase;
  * Class PbxExtensionSetup
  * Module installer and uninstaller
  *
- * @package Modules\ModuleTemplate\Setup
+ * @package Modules\ModuleCTIClientV5\Setup
  */
 class PbxExtensionSetup extends PbxExtensionSetupBase
 {

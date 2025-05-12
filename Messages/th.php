@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'เทมเพลตโมดูล - % ซ้ำ%',
-    'mo_ModuleModuleTemplate' => 'เทมเพลตโมดูล',
-    'BreadcrumbModuleTemplate' => 'โมดูลเทมเพลต',
-    'SubHeaderModuleTemplate' => 'ตัวอย่างการสร้างโมดูลของคุณเอง',
+    'repModuleCTIClientV5' => 'เทมเพลตโมดูล - % ซ้ำ%',
+    'mo_ModuleModuleCTIClientV5' => 'เทมเพลตโมดูล',
+    'BreadcrumbModuleCTIClientV5' => 'โมดูลเทมเพลต',
+    'SubHeaderModuleCTIClientV5' => 'ตัวอย่างการสร้างโมดูลของคุณเอง',
     'module_template_AddNewRecord' => 'เพิ่ม',
     'module_template_TextFieldLabel' => 'ตัวอย่างช่องข้อความ',
     'module_template_TextAreaFieldLabel' => 'ตัวอย่างช่องหลายหน้า',

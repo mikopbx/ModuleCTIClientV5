@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Šablona modulu – %repesent%',
-    'mo_ModuleModuleTemplate' => 'Šablona modulu',
-    'BreadcrumbModuleTemplate' => 'Modul šablony',
-    'SubHeaderModuleTemplate' => 'Příklad pro vytvoření vlastních modulů',
+    'repModuleCTIClientV5' => 'Šablona modulu – %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Šablona modulu',
+    'BreadcrumbModuleCTIClientV5' => 'Modul šablony',
+    'SubHeaderModuleCTIClientV5' => 'Příklad pro vytvoření vlastních modulů',
     'module_template_AddNewRecord' => 'Přidat',
     'module_template_TextFieldLabel' => 'Příklad textového pole',
     'module_template_TextAreaFieldLabel' => 'Příklad vícestránkového pole',

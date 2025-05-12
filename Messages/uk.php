@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Модуль шаблону - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Модуль шаблон',
-    'BreadcrumbModuleTemplate' => 'Шаблонний модуль',
-    'SubHeaderModuleTemplate' => 'Приклад створення власних модулів',
+    'repModuleCTIClientV5' => 'Модуль шаблону - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Модуль шаблон',
+    'BreadcrumbModuleCTIClientV5' => 'Шаблонний модуль',
+    'SubHeaderModuleCTIClientV5' => 'Приклад створення власних модулів',
     'module_template_AddNewRecord' => 'Додати',
     'module_template_TextFieldLabel' => 'Приклад текстового поля',
     'module_template_TextAreaFieldLabel' => 'Приклад багатосторінкового поля',

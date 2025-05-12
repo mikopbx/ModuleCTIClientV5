@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Predložak modula - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Predložak modula',
-    'BreadcrumbModuleTemplate' => 'Modul predloška',
-    'SubHeaderModuleTemplate' => 'Primjer za izradu vlastitih modula',
+    'repModuleCTIClientV5' => 'Predložak modula - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Predložak modula',
+    'BreadcrumbModuleCTIClientV5' => 'Modul predloška',
+    'SubHeaderModuleCTIClientV5' => 'Primjer za izradu vlastitih modula',
     'module_template_AddNewRecord' => 'Dodati',
     'module_template_TextFieldLabel' => 'Primjer tekstualnog polja',
     'module_template_TextAreaFieldLabel' => 'Primjer polja s više stranica',

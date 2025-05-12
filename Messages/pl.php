@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Szablon modułu - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Szablon modułu',
-    'BreadcrumbModuleTemplate' => 'Moduł szablonowy',
-    'SubHeaderModuleTemplate' => 'Przykład tworzenia własnych modułów',
+    'repModuleCTIClientV5' => 'Szablon modułu - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Szablon modułu',
+    'BreadcrumbModuleCTIClientV5' => 'Moduł szablonowy',
+    'SubHeaderModuleCTIClientV5' => 'Przykład tworzenia własnych modułów',
     'module_template_AddNewRecord' => 'Dodać',
     'module_template_TextFieldLabel' => 'Przykład pola tekstowego',
     'module_template_TextAreaFieldLabel' => 'Przykład pola wielostronicowego',

@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Modulmall – %repesent%',
-    'mo_ModuleModuleTemplate' => 'Modulmall',
-    'BreadcrumbModuleTemplate' => 'Mallmodul',
-    'SubHeaderModuleTemplate' => 'Exempel för att skapa egna moduler',
+    'repModuleCTIClientV5' => 'Modulmall – %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Modulmall',
+    'BreadcrumbModuleCTIClientV5' => 'Mallmodul',
+    'SubHeaderModuleCTIClientV5' => 'Exempel för att skapa egna moduler',
     'module_template_AddNewRecord' => 'Lägg till',
     'module_template_TextFieldLabel' => 'Exempel på textfält',
     'module_template_TextAreaFieldLabel' => 'Exempel på ett flersidigt fält',

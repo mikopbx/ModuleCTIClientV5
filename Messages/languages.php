@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => '',
-    'mo_ModuleModuleTemplate' => '',
-    'BreadcrumbModuleTemplate' => '',
-    'SubHeaderModuleTemplate' => '',
+    'repModuleCTIClientV5' => '',
+    'mo_ModuleModuleCTIClientV5' => '',
+    'BreadcrumbModuleCTIClientV5' => '',
+    'SubHeaderModuleCTIClientV5' => '',
     'module_template_AddNewRecord' => '',
     'module_template_TextFieldLabel' => '',
     'module_template_TextAreaFieldLabel' => '',

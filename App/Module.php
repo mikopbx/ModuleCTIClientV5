@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\App;
+namespace Modules\ModuleCTIClientV5\App;
 
 use Phalcon\Di\DiInterface;
 use Phalcon\Events\Manager;
@@ -48,7 +48,7 @@ class Module implements ModuleDefinitionInterface
             $eventManager = new Manager();
 
             $dispatcher->setEventsManager($eventManager);
-            $dispatcher->setDefaultNamespace('Modules\ModuleTemplate\App\Controllers\\');
+            $dispatcher->setDefaultNamespace('Modules\ModuleCTIClientV5\App\Controllers\\');
             return $dispatcher;
         });
     }

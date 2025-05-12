@@ -18,14 +18,14 @@
  */
 
 
-namespace Modules\ModuleTemplate\App\Controllers;
+namespace Modules\ModuleCTIClientV5\App\Controllers;
 
 use MikoPBX\AdminCabinet\Controllers\BaseController;
 use MikoPBX\Modules\PbxExtensionUtils;
 
 class AdditionalPageController extends BaseController
 {
-    private string $moduleUniqueID = 'ModuleTemplate';
+    private string $moduleUniqueID = 'ModuleCTIClientV5';
     private string $moduleDir;
 
     /**

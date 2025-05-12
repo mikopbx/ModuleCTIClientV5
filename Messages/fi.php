@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Moduulimalli - %repesent%',
-    'mo_ModuleModuleTemplate' => 'Moduulin malli',
-    'BreadcrumbModuleTemplate' => 'Mallimoduuli',
-    'SubHeaderModuleTemplate' => 'Esimerkki omien moduulien luomisesta',
+    'repModuleCTIClientV5' => 'Moduulimalli - %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Moduulin malli',
+    'BreadcrumbModuleCTIClientV5' => 'Mallimoduuli',
+    'SubHeaderModuleCTIClientV5' => 'Esimerkki omien moduulien luomisesta',
     'module_template_AddNewRecord' => 'Lisätä',
     'module_template_TextFieldLabel' => 'Esimerkki tekstikentästä',
     'module_template_TextAreaFieldLabel' => 'Esimerkki monisivuisesta kentästä',

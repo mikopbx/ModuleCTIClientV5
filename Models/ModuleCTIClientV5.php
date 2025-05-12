@@ -17,13 +17,13 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\Models;
+namespace Modules\ModuleCTIClientV5\Models;
 
 use MikoPBX\Common\Models\Providers;
 use MikoPBX\Modules\Models\ModulesModelsBase;
 use Phalcon\Mvc\Model\Relation;
 
-class ModuleTemplate extends ModulesModelsBase
+class ModuleCTIClientV5 extends ModulesModelsBase
 {
 
     /**
@@ -86,7 +86,7 @@ class ModuleTemplate extends ModulesModelsBase
      * Returns dynamic relations between module models and common models
      * MikoPBX check it in ModelsBase after every call to keep data consistent
      *
-     * There is example to describe the relation between Providers and ModuleTemplate models
+     * There is example to describe the relation between Providers and ModuleCTIClientV5 models
      *
      * It is important to duplicate the relation alias on message field after Models\ word
      *
@@ -99,13 +99,13 @@ class ModuleTemplate extends ModulesModelsBase
 //        if (is_a($calledModelObject, Providers::class)) {
 //            $calledModelObject->belongsTo(
 //                'id',
-//                ModuleTemplate::class,
+//                ModuleCTIClientV5::class,
 //                'dropdown_field',
 //                [
-//                    'alias'      => 'ModuleTemplateProvider',
+//                    'alias'      => 'ModuleCTIClientV5Provider',
 //                    'foreignKey' => [
 //                        'allowNulls' => 0,
-//                        'message'    => 'Models\ModuleTemplateProvider',
+//                        'message'    => 'Models\ModuleCTIClientV5Provider',
 //                        'action'     => Relation::ACTION_RESTRICT
 //
 //                    ],
@@ -116,7 +116,7 @@ class ModuleTemplate extends ModulesModelsBase
 
     public function initialize(): void
     {
-        $this->setSource('m_ModuleTemplate');
+        $this->setSource('m_ModuleCTIClientV5');
         $this->hasOne(
             'dropdown_field',
             Providers::class,

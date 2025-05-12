@@ -17,14 +17,14 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\Lib;
+namespace Modules\ModuleCTIClientV5\Lib;
 
 use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
 
-class TemplateConf extends ConfigClass
+class CTIClientV5Conf extends ConfigClass
 {
 
     /**
@@ -39,7 +39,7 @@ class TemplateConf extends ConfigClass
             $data['model'] === PbxSettings::class
             && $data['recordId'] === 'PBXLanguage'
         ) {
-            $templateMain = new TemplateMain();
+            $templateMain = new CTIClientV5Main();
             $templateMain->startAllServices(true);
         }
     }
@@ -54,11 +54,11 @@ class TemplateConf extends ConfigClass
         return [
             [
                 'type'   => WorkerSafeScriptsCore::CHECK_BY_BEANSTALK,
-                'worker' => WorkerTemplateMain::class,
+                'worker' => WorkerCTIClientV5Main::class,
             ],
             [
                 'type'   => WorkerSafeScriptsCore::CHECK_BY_AMI,
-                'worker' => WorkerTemplateAMI::class,
+                'worker' => WorkerCTIClientV5AMI::class,
             ],
         ];
     }
@@ -77,17 +77,17 @@ class TemplateConf extends ConfigClass
         $action = strtoupper($request['action']);
         switch ($action) {
             case 'CHECK':
-                $templateMain = new TemplateMain();
+                $templateMain = new CTIClientV5Main();
                 $res          = $templateMain->checkModuleWorkProperly();
                 break;
             case 'RELOAD':
-                $templateMain = new TemplateMain();
+                $templateMain = new CTIClientV5Main();
                 $templateMain->startAllServices(true);
                 $res->success = true;
                 break;
             default:
                 $res->success    = false;
-                $res->messages[] = 'API action not found in moduleRestAPICallback ModuleTemplate';
+                $res->messages[] = 'API action not found in moduleRestAPICallback ModuleCTIClientV5';
         }
 
         return $res;
@@ -108,7 +108,7 @@ class TemplateConf extends ConfigClass
             'caption'=>'module_template_AdditionalMenuItem',
             'iconclass'=>'',
             'submenu'=>[
-                '/module-template/additional-page'=>[
+                '/modulecticlient-v5/additional-page'=>[
                     'caption' => 'module_template_AdditionalSubMenuItem',
                     'iconclass' => 'gear',
                     'action' => 'index',

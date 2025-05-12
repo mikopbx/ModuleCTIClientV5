@@ -17,10 +17,10 @@
  */
 
 /* global globalRootUrl, globalTranslate, Form, Config */
-const ModuleTemplateModify = {
-	$formObj: $('#module-template-form'),
-	$checkBoxes: $('#module-template-form .ui.checkbox'),
-	$dropDowns: $('#module-template-form .ui.dropdown'),
+const ModuleCTIClientV5Modify = {
+	$formObj: $('#modulecticlient-v5-form'),
+	$checkBoxes: $('#modulecticlient-v5-form .ui.checkbox'),
+	$dropDowns: $('#modulecticlient-v5-form .ui.dropdown'),
 
 	/**
 	 * Field validation rules
@@ -59,9 +59,9 @@ const ModuleTemplateModify = {
 	 * On page load init some Semantic UI library
 	 */
 	initialize() {
-		ModuleTemplateModify.$checkBoxes.checkbox();
-		ModuleTemplateModify.$dropDowns.dropdown();
-		ModuleTemplateModify.initializeForm();
+		ModuleCTIClientV5Modify.$checkBoxes.checkbox();
+		ModuleCTIClientV5Modify.$dropDowns.dropdown();
+		ModuleCTIClientV5Modify.initializeForm();
 	},
 
 	/**
@@ -71,7 +71,7 @@ const ModuleTemplateModify = {
 	 */
 	cbBeforeSendForm(settings) {
 		const result = settings;
-		result.data = ModuleTemplateModify.$formObj.form('get values');
+		result.data = ModuleCTIClientV5Modify.$formObj.form('get values');
 		return result;
 	},
 
@@ -85,16 +85,16 @@ const ModuleTemplateModify = {
 	 * Initialize form parameters
 	 */
 	initializeForm() {
-		Form.$formObj = ModuleTemplateModify.$formObj;
-		Form.url = `${globalRootUrl}module-template/module-template/save`;
-		Form.validateRules = ModuleTemplateModify.validateRules;
-		Form.cbBeforeSendForm = ModuleTemplateModify.cbBeforeSendForm;
-		Form.cbAfterSendForm = ModuleTemplateModify.cbAfterSendForm;
+		Form.$formObj = ModuleCTIClientV5Modify.$formObj;
+		Form.url = `${globalRootUrl}modulecticlient-v5/modulecticlient-v5/save`;
+		Form.validateRules = ModuleCTIClientV5Modify.validateRules;
+		Form.cbBeforeSendForm = ModuleCTIClientV5Modify.cbBeforeSendForm;
+		Form.cbAfterSendForm = ModuleCTIClientV5Modify.cbAfterSendForm;
 		Form.initialize();
 	},
 };
 
 $(document).ready(() => {
-	ModuleTemplateModify.initialize();
+	ModuleCTIClientV5Modify.initialize();
 });
 

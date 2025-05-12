@@ -16,31 +16,31 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-const ModuleTemplateIndex = {
+const ModuleCTIClientV5Index = {
 	var1:'foo',
 	$var2: $('.foo'),
 	$moduleStatus: $('#status'),
 	$statusToggle: $('#module-status-toggle'),
 	$disabilityFields: $('.disability'),
 	initialize(){
-		ModuleTemplateIndex.cbOnChangeStatusToggle();
-		window.addEventListener('ModuleStatusChanged', ModuleTemplateIndex.cbOnChangeStatusToggle);
+		ModuleCTIClientV5Index.cbOnChangeStatusToggle();
+		window.addEventListener('ModuleStatusChanged', ModuleCTIClientV5Index.cbOnChangeStatusToggle);
 	},
 	/**
 	 * Change some form elements classes depends of module status
 	 */
 	cbOnChangeStatusToggle() {
-		if (ModuleTemplateIndex.$statusToggle.checkbox('is checked')) {
-			ModuleTemplateIndex.$disabilityFields.removeClass('disabled');
-			ModuleTemplateIndex.$moduleStatus.show();
+		if (ModuleCTIClientV5Index.$statusToggle.checkbox('is checked')) {
+			ModuleCTIClientV5Index.$disabilityFields.removeClass('disabled');
+			ModuleCTIClientV5Index.$moduleStatus.show();
 		} else {
-			ModuleTemplateIndex.$disabilityFields.addClass('disabled');
-			ModuleTemplateIndex.$moduleStatus.hide();
+			ModuleCTIClientV5Index.$disabilityFields.addClass('disabled');
+			ModuleCTIClientV5Index.$moduleStatus.hide();
 		}
 	},
 
 };
 
 $(document).ready(() => {
-	ModuleTemplateIndex.initialize();
+	ModuleCTIClientV5Index.initialize();
 });

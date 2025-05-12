@@ -18,7 +18,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Modules\ModuleTemplate\App\Forms;
+namespace Modules\ModuleCTIClientV5\App\Forms;
 
 use MikoPBX\AdminCabinet\Forms\BaseForm;
 use Phalcon\Forms\Element\Text;
@@ -28,7 +28,7 @@ use Phalcon\Forms\Element\Check;
 use Phalcon\Forms\Element\Hidden;
 use Phalcon\Forms\Element\Select;
 
-class ModuleTemplateForm extends BaseForm
+class ModuleCTIClientV5Form extends BaseForm
 {
     public function initialize($entity = null, $options = null): void
     {

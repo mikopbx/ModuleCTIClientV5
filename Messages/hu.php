@@ -17,10 +17,10 @@ return [
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-    'repModuleTemplate' => 'Modulsablon – %repesent%',
-    'mo_ModuleModuleTemplate' => 'Modul sablon',
-    'BreadcrumbModuleTemplate' => 'Sablon modul',
-    'SubHeaderModuleTemplate' => 'Példa saját modulok létrehozására',
+    'repModuleCTIClientV5' => 'Modulsablon – %repesent%',
+    'mo_ModuleModuleCTIClientV5' => 'Modul sablon',
+    'BreadcrumbModuleCTIClientV5' => 'Sablon modul',
+    'SubHeaderModuleCTIClientV5' => 'Példa saját modulok létrehozására',
     'module_template_AddNewRecord' => 'Hozzáadás',
     'module_template_TextFieldLabel' => 'Példa szövegmezőre',
     'module_template_TextAreaFieldLabel' => 'Példa többoldalas mezőre',
