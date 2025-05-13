@@ -114,7 +114,6 @@ class ModuleCTIClientV5Controller extends BaseController
                 case 'ami_password':
                 case 'nats_password':
                     break;
-                case 'debug_mode':
                 case 'setup_caller_id':
                 case 'transliterate_caller_id':
                     if (isset($data[$key])) {

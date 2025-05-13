@@ -204,15 +204,12 @@ class AmigoDaemons extends Injectable
      */
     private function generateCoreConf(): void
     {
-        $logDir = "{$this->dirs['logDir']}/" . self::SERVICE_CORE;
-        Util::mwMkdir($logDir);
-
         $pid_file = "{$this->dirs['pidDir']}/core.pid";
 
         $settings = [
             'log' => [
-                   'level' => intval($this->module_settings['debug_mode']) === 1 ? 6 : 2,
-                    'dir' => $logDir,
+               'level' => intval($this->module_settings['debug_mode']) === 1 ? 6 : 4,
+               'dir' => $this->dirs['logDir'],
             ],
             'nats' => [
                 'port' => $this->getNatsPort(),

@@ -12,15 +12,6 @@
     <div class="ui bottom attached tab segment active" data-tab="settings">
         <div class="field">
             <div class="ui segment">
-                <div class="ui toggle checkbox " id="debug-mode-toggle">
-                    {{ form.render('debug_mode') }}
-                    <label for="debug_mode">{{ t._('mod_cti_EnableDebugMode') }}</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="field">
-            <div class="ui segment">
                 <div class="ui toggle checkbox " id="setup-caller-id-toggle">
                     {{ form.render('setup_caller_id') }}
                     <label for="setup_caller_id">{{ t._('mod_cti_EnableSetCallerID') }}</label>

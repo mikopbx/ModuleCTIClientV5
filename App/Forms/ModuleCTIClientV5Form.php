@@ -27,8 +27,6 @@ class ModuleCTIClientV5Form extends Form
 {
     public function initialize($entity = null)
     {
-        $this->addCheckBox('debug_mode', intval($entity->debug_mode) === 1);
-
         // Set CallerID by 1C data
         $this->addCheckBox('setup_caller_id', intval($entity->setup_caller_id) === 1);
 
