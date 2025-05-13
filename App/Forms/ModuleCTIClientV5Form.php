@@ -20,59 +20,20 @@
 
 namespace Modules\ModuleCTIClientV5\App\Forms;
 
-use MikoPBX\AdminCabinet\Forms\BaseForm;
-use Phalcon\Forms\Element\Text;
-use Phalcon\Forms\Element\Numeric;
-use Phalcon\Forms\Element\Password;
 use Phalcon\Forms\Element\Check;
-use Phalcon\Forms\Element\Hidden;
-use Phalcon\Forms\Element\Select;
+use Phalcon\Forms\Form;
 
-class ModuleCTIClientV5Form extends BaseForm
+class ModuleCTIClientV5Form extends Form
 {
-    public function initialize($entity = null, $options = null): void
+    public function initialize($entity = null)
     {
+        $this->addCheckBox('debug_mode', intval($entity->debug_mode) === 1);
 
-        // id
-        $this->add(new Hidden('id', ['value' => $entity->id]));
+        // Set CallerID by 1C data
+        $this->addCheckBox('setup_caller_id', intval($entity->setup_caller_id) === 1);
 
-        // text_field
-        $this->add(new Text('text_field'));
-
-        // text_area_field
-        $this->addTextArea(
-            'text_area_field',
-            $entity->text_area_field ?? '',
-            90,
-            ['placeholder' => 'There is placeholder text']
-        );
-
-        // password_field
-        $this->add(new Password('password_field'));
-
-        // integer_field
-        $this->add(new Numeric('integer_field', [
-            'maxlength'    => 2,
-            'style'        => 'width: 80px;',
-            'defaultValue' => 3,
-        ]));
-
-        // checkbox_field
-        $this->addCheckBox('checkbox_field', intval($entity->checkbox_field) === 1);
-
-        // toggle_field
-        $this->addCheckBox('toggle_field', intval($entity->toggle_field) === 1);
-
-        // dropdown_field
-        $providers = new Select('dropdown_field', $options['providers'], [
-            'using'    => [
-                'id',
-                'name',
-            ],
-            'useEmpty' => false,
-            'class'    => 'ui selection dropdown provider-select',
-        ]);
-        $this->add($providers);
+        // Set Transliterate caller ID
+        $this->addCheckBox('transliterate_caller_id', intval($entity->transliterate_caller_id) === 1);
     }
 
     /**

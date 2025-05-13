@@ -19,118 +19,136 @@
 
 namespace Modules\ModuleCTIClientV5\Models;
 
-use MikoPBX\Common\Models\Providers;
 use MikoPBX\Modules\Models\ModulesModelsBase;
-use Phalcon\Mvc\Model\Relation;
 
+
+/**
+ * Class ModuleCTIClientV5
+ *
+ * Represents the CTI Client module.
+ */
 class ModuleCTIClientV5 extends ModulesModelsBase
 {
 
     /**
      * @Primary
      * @Identity
-     * @Column(type="integer", nullable=false)
+     * @Column(type='integer', nullable=false)
      */
     public $id;
 
     /**
-     * Text field example
+     * @var string|null The address of the 1C server
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $text_field;
+    public ?string $server1chost = '';
 
     /**
-     * TextArea field example
+     * @var string|null The port where the 1C server is published
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='integer', nullable=true, default='80')
      */
-    public $text_area_field;
+    public ?string $server1cport = '80';
 
     /**
-     * Password field example
+     * @var string|null Use SSL connection to the 1C server
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', length=1, nullable=true, default='http')
      */
-    public $password_field;
+    public ?string $server1c_scheme = 'http';
 
     /**
-     * Integer field example
+     * @var string|null Login to the web service
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $integer_field;
+    public ?string $login = '';
 
     /**
-     * CheckBox
+     * @var string|null Password for the web service
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $checkbox_field;
+    public ?string $secret = '';
 
     /**
-     * Toggle
+     * @var string|null The name of the publication on the 1C server
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $toggle_field;
+    public ?string $database = '';
 
     /**
-     * Dropdown menu
+     * @var string|null The name of the publication on the 1C server with domain authentication enabled
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $dropdown_field;
+    public ?string $publish_name_with_auth = '';
 
     /**
-     * Returns dynamic relations between module models and common models
-     * MikoPBX check it in ModelsBase after every call to keep data consistent
+     * @var string|null Mode requiring publication of the 1C database
      *
-     * There is example to describe the relation between Providers and ModuleCTIClientV5 models
+     * @Column(type='string', length=1, nullable=true, default='0')
+     */
+    public ?string $web_service_mode = '0';
+
+    /**
+     * @var string|null Debug mode of the module
      *
-     * It is important to duplicate the relation alias on message field after Models\ word
+     * @Column(type='string', length=1, nullable=true, default='0')
+     */
+    public ?string $debug_mode = '0';
+
+    /**
+     * @var string|null AMI password for the created manager
      *
-     * @param $calledModelObject
+     * @Column(type='string', nullable=true, default='')
+     */
+    public ?string $ami_password = '';
+
+    /**
+     * @var string|null Asterisk UID for the created manager
      *
+     * @Column(type='string', nullable=true, default='')
+     */
+    public ?string $asterisk_uid = '';
+
+    /**
+     * @var string|null GNATS password for auto-configuration
+     *
+     * @Column(type='string', nullable=true, default='')
+     */
+    public ?string $nats_password = '';
+
+    /**
+     * @var string|null Module configuration mode from the 1C side
+     *
+     * @Column(type='string', length=1, nullable=true, default='0')
+     */
+    public ?string $auto_settings_mode = '1';
+
+    /**
+     * @var string|null Whether to set CallerID based on data from 1C
+     *
+     * @Column(type='string', length=1, nullable=true, default='0')
+     */
+    public ?string $setup_caller_id = '1';
+
+    /**
+     * @var string|null Whether to transliterate CallerID
+     *
+     * @Column(type='string', length=1, nullable=true, default='0')
+     */
+    public ?string $transliterate_caller_id = '0';
+
+    /**
+     * Initialize model for module
      * @return void
      */
-    public static function getDynamicRelations(&$calledModelObject): void
-    {
-//        if (is_a($calledModelObject, Providers::class)) {
-//            $calledModelObject->belongsTo(
-//                'id',
-//                ModuleCTIClientV5::class,
-//                'dropdown_field',
-//                [
-//                    'alias'      => 'ModuleCTIClientV5Provider',
-//                    'foreignKey' => [
-//                        'allowNulls' => 0,
-//                        'message'    => 'Models\ModuleCTIClientV5Provider',
-//                        'action'     => Relation::ACTION_RESTRICT
-//
-//                    ],
-//                ]
-//            );
-//        }
-    }
-
     public function initialize(): void
     {
         $this->setSource('m_ModuleCTIClientV5');
-        $this->hasOne(
-            'dropdown_field',
-            Providers::class,
-            'id',
-            [
-                'alias'      => 'Providers',
-                'foreignKey' => [
-                    'allowNulls' => true,
-                    'action'     => Relation::NO_ACTION,
-                ],
-            ]
-        );
         parent::initialize();
     }
-
-
 }
