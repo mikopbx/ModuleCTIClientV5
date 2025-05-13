@@ -18,22 +18,9 @@
  */
 
 return [
-	'repModuleCTIClientV5'         => 'Модуль шаблон - %repesent%',
-	'mo_ModuleModuleCTIClientV5'   => 'Модуль шаблон',
-    'BreadcrumbModuleCTIClientV5'  => 'Шаблонный модуль',
-    'SubHeaderModuleCTIClientV5'   => 'Пример для создания собственных модулей',
+	'repModuleCTIClientV5'         => 'Модуль панель телефонии 5 - %repesent%',
+	'mo_ModuleModuleCTIClientV5'   => 'Модуль панель телефонии 5',
+    'BreadcrumbModuleCTIClientV5'  => 'Панель телефонии 5',
+    'SubHeaderModuleCTIClientV5'   => 'Панель телефонии 5',
     'module_template_AddNewRecord'  => 'Добавить',
-    'module_template_TextFieldLabel'        => 'Пример текстового поля',
-    'module_template_TextAreaFieldLabel'    => 'Пример многостраничного поля',
-    'module_template_PasswordFieldLabel'    => 'Пример поля с паролем',
-    'module_template_IntegerFieldLabel'     => 'Пример числового поля',
-    'module_template_CheckBoxFieldLabel'    => 'Чекбокс',
-    'module_template_ToggleFieldLabel'      => 'Переключатель',
-    'module_template_DropDownFieldLabel'    => 'Выпадающее меню',
-    'module_template_ValidateValueIsEmpty'  => 'Проверьте поле, оно не заполнено',
-    'module_template_AdditionalMenuItem'    => 'Шаблонный модуль',
-    'module_template_AdditionalTabContent'  => 'Модуль может содержать несколько разных страниц, при желании их можно добавить в меню',
-    'module_template_AdditionalSubMenuItem' => 'Пример подменю с отдельной страницей',
-    'module_template_ChangeRecord'  => 'Изменить параметры модуля',
-    'BreadcrumbAdditionalPage'      => 'Пример отдельного контроллера для модуля'
 ];

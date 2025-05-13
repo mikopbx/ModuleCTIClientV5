@@ -19,8 +19,6 @@
 
 namespace Modules\ModuleCTIClientV5\Setup;
 
-use MikoPBX\Common\Models\DialplanApplications;
-use MikoPBX\Common\Models\Extensions;
 use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Core\System\Processes;
 use MikoPBX\Core\System\System;
@@ -35,8 +33,6 @@ use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
  */
 class PbxExtensionSetup extends PbxExtensionSetupBase
 {
-
-    private string $number = '000XXXX';
 
     /**
      * Создает структуру для хранения настроек модуля в своей модели
@@ -54,13 +50,10 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
 
 
         if ($result) {
-            $this->db->begin();
             $settings = ModuleCTIClientV5::findFirst();
             if ($settings === null) {
                 $settings                     = new ModuleCTIClientV5();
                 $settings->debug_mode         = '0';
-                $settings->web_service_mode   = '0';
-                $settings->auto_settings_mode = '1';
                 $settings->setup_caller_id    = '1';
                 $settings->transliterate_caller_id = '0';
             }
@@ -77,42 +70,10 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
                 $settings->asterisk_uid = MikoPBXVersion::generateRandomPassword(16);
             }
 
-            // Приложение для авторизации внешней панели.
-            $record = Extensions::findFirst('number="' . $this->number . '"');
-            if ($record === null) {
-                $record                    = new Extensions();
-                $record->number            = $this->number;
-                $record->type              = 'DIALPLAN APPLICATION';
-                $record->callerid          = 'Module CTI Client V5 auth app';
-                $record->show_in_phonebook = 0;
-            }
-            $d_app = DialplanApplications::findFirst('extension="' . $this->number . '"');
-
-            if ($d_app === null) {
-                $d_app            = new DialplanApplications();
-                $d_app->uniqid    = 'DIALPLAN-APPLICATION-' . md5(time());
-                $d_app->extension = $this->number;
-            }
-            $logic = '1,Answer()' . "\n" .
-                'n,Playback(beep)' . "\n" .
-                'n,Playback(silence/1)' . "\n" .
-                'n,Playback(silence/1)' . "\n" .
-                'n,Hangup';
-
-
-            $d_app->name             = $this->translation->_('mod_cti_AuthApp_Name');
-            $d_app->description      = $this->translation->_('mod_cti_AuthApp_Description');
-
-            $d_app->applicationlogic = base64_encode($logic);
-            $d_app->type             = 'plaintext';
-
-            if ($record->save() && $d_app->save() && $settings->save()) {
-                $this->db->commit();
-            } else {
-                $this->db->rollback();
+            if (!$settings->save()) {
                 Util::sysLogMsg(
                     'update_system_config',
-                    'Error: Failed to update table the Extensions and the DialplanApplications tables.'
+                    'Error: Failed to save module settings.'
                 );
                 $result = false;
             }
@@ -130,43 +91,6 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
     }
 
     /**
-     * Выполняет копирование необходимых файлов, в папки системы
-     *
-     * @return bool Результат установки
-     */
-    public function installFiles(): bool
-    {
-        // Create chatdb folder
-        $chat_database_path = $this->moduleDir . '/db/chats/';
-        Util::mwMkdir($chat_database_path);
-
-        parent::installFiles();
-
-        return true;
-    }
-
-    /**
-     * Удаляет запись о модуле из PbxExtensionModules.
-     * Удаляет свою модель
-     *
-     * @param  $keepSettings string Оставляет таблицу с данными своей модели
-     *
-     * @return bool Результат очистки
-     */
-    public function unInstallDB($keepSettings = false): bool
-    {
-        $result = true;
-        // Удалим запись Extension для модуля
-        $record = Extensions::findFirst('number="' . $this->number . '"');
-        if ($record) {
-            $result = $result && $record->delete();
-        }
-        parent::unInstallDB($keepSettings);
-
-        return $result;
-    }
-
-    /**
      * Выполняет удаление своих файлов с остановкой процессов
      * при необходимости
      *
@@ -176,16 +100,8 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
     {
         Processes::killbyname(AmigoDaemons::SERVICE_TELEGRAM);
         Processes::killbyname(AmigoDaemons::SERVICE_WHATSAPP);
-        Processes::killbyname(AmigoDaemons::SERVICE_CORE);
         Processes::killbyname(AmigoDaemons::SERVICE_ASTERISK);
-
-        // confDir
-        $confDir = '/etc/custom_modules/ModuleCTIClientV5';
-        Processes::mwExec("rm -rf {$confDir}");
-
-        // spoolDir
-        $spoolDir = '/var/spool/custom_modules/ModuleCTIClientV5';
-        Processes::mwExec("rm -rf {$spoolDir}");
+        Processes::killbyname(AmigoDaemons::SERVICE_CORE);
 
         // logDir
         $logDir = System::getLogDir();

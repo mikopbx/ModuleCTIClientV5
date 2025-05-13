@@ -21,6 +21,7 @@
 
 namespace Modules\ModuleCTIClientV5\Lib;
 
+use MikoPBX\Common\Models\PbxExtensionModules;
 use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Core\System\MikoPBXConfig;
 use MikoPBX\Core\System\Processes;
@@ -82,10 +83,9 @@ class AmigoDaemons extends Injectable
         Util::mwMkdir($binDir);
 
         // storeDir
-        $tempDir = $this->config->path('core.tempDir');
         $storeDir = $moduleDir . '/db';
         Util::mwMkdir($storeDir);
-
+       
         // logDir
         $logDir = System::getLogDir();
         $logDir = "{$logDir}/{$this->moduleUniqueID}";
@@ -99,7 +99,9 @@ class AmigoDaemons extends Injectable
         $confDir = "{$storeDir}/etc";
         Util::mwMkdir($confDir);
 
-        $sessionsDir = "{$tempDir}/sessions";
+        // SessionsDir
+        $tempDir = $this->config->path('core.tempDir');
+        $sessionsDir = "{$tempDir}/{$this->moduleUniqueID}/sessions";
         Util::mwMkdir($sessionsDir);
 
         return [
@@ -207,12 +209,6 @@ class AmigoDaemons extends Injectable
 
         $pid_file = "{$this->dirs['pidDir']}/core.pid";
 
-        // $moduleVersion = 'unknown';
-        // $currentModuleInfo = PbxExtensionModules::findFirstByUniqid($this->moduleUniqueID);
-        // if ($currentModuleInfo) {
-        //     $moduleVersion = $currentModuleInfo->version;
-        // }
-
         $settings = [
             'log' => [
                    'level' => intval($this->module_settings['debug_mode']) === 1 ? 6 : 2,
@@ -228,21 +224,10 @@ class AmigoDaemons extends Injectable
             'binary_dir' => $this->dirs['binDir'],
             'session_dir' => $this->dirs['sessionsDir'],
             'authorization_token' => $this->module_settings['nats_password'],
-            //'web_port' => PbxSettings::getValueByKey('WEBPort'),
+            'license_key' => PbxSettings::getValueByKey('PBXLicense')
         ];
-
-        $config = '';
-        foreach ($settings as $key => $val) {
-            $config .= "{$key}: {$val} \n";
-        }
-
-        file_put_contents($this->dirs['confDir'] . '/config.default.json', $config);
-        if (!file_exists($this->dirs['confDir'] . '/config.json')) {
-            file_put_contents($this->dirs['confDir'] . '/config.json', $config);
-        }
-
-        // $licKey = PbxSettings::getValueByKey('PBXLicense');
-        // file_put_contents("{$sessionsDir}/license.key", $licKey);
+        $config_default_file = "{$this->dirs['confDir']}/config.default.json";
+        file_put_contents($config_default_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         if (file_exists($pid_file)) {
             $pid = file_get_contents($pid_file);
@@ -384,8 +369,9 @@ class AmigoDaemons extends Injectable
             ],
         ];
 
+        $sip_headers_file = "{$this->dirs['storeDir']}/sip_headers.json";
         file_put_contents(
-            "{$this->dirs['storeDir']}/sip_headers.json",
+            $sip_headers_file,
             json_encode($settings_headers, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
     }
@@ -402,8 +388,11 @@ class AmigoDaemons extends Injectable
             'port' => PbxSettings::getValueByKey('AMIPort'),
         ];
         $UID = md5($this->module_settings['asterisk_uid']);
-        Util::fileWriteContent(
-            "{$this->dirs['storeDir']}/asterisk/{$UID}/cred.json",
+
+        $credDir = "{$this->dirs['storeDir']}/asterisk/{$UID}";
+        Util::mwMkdir($credDir);
+        file_put_contents(
+            "{$credDir}/cred.json",
             json_encode($cred_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
 
@@ -415,8 +404,9 @@ class AmigoDaemons extends Injectable
                 'args' => '--pbx mikopbx',
             ]
         ];
-        Util::fileWriteContent(
-            "{$this->dirs['storeDir']}/services_permanent.json",
+        $permanent_settings_file = "{$this->dirs['storeDir']}/services_permanent.json";
+        file_put_contents(
+            $permanent_settings_file,
             json_encode($permanent_settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
         
@@ -429,6 +419,7 @@ class AmigoDaemons extends Injectable
     {
         $settings_amid = [
             'pbx' => 'mikopbx',
+            'web_port' => PbxSettings::getValueByKey('WEBPort'),
             'originate' => [
                 'default_context' => 'all_peers',
                 'transfer_context' => 'internal-transfer',
@@ -445,12 +436,24 @@ class AmigoDaemons extends Injectable
             ],
         ];
 
-        Util::fileWriteContent(
-            "{$this->dirs['storeDir']}/mikopbx_defaults.json",
+        $mikopbx_defaults_file = "{$this->dirs['storeDir']}/mikopbx_defaults.json";
+        file_put_contents(
+            $mikopbx_defaults_file,
             json_encode($settings_amid, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
-    }
 
+        $moduleVersion = 'unknown';
+        $currentModuleInfo = PbxExtensionModules::findFirstByUniqid($this->moduleUniqueID);
+        if ($currentModuleInfo) {
+             $moduleVersion = $currentModuleInfo->version;
+        }
+        $module_version_file = "{$this->dirs['storeDir']}/module_version";
+        file_put_contents(
+            $module_version_file,
+            $moduleVersion
+        );
+
+    }
 
     /**
      * Check if the module is working properly.
@@ -492,43 +495,36 @@ class AmigoDaemons extends Injectable
      */
     private function checkWorkerStatuses(): array
     {
-        // $statusUrl = 'http://127.0.0.1:8225/manager.api/status';
-        // $curl = curl_init();
-        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-        // curl_setopt($curl, CURLOPT_URL, $statusUrl);
+        $webPort = self::getNatsHttpPort();
 
-        // try {
-        //     $response = curl_exec($curl);
-        //     //$response = str_replace('\n', '', $response);
-        //     $data = json_decode($response, true);
-        // } catch (Throwable $e) {
-        //     $data = null;
-        // }
-        // $result = [];
-        // curl_close($curl);
-        // if (
-        //     $data !== null
-        //     && array_key_exists('result', $data)
-        //     && is_array($data['result'])
-        // ) {
-        //     $result = $data['result'];
-        // } else {
-        //     $result[] = [
-        //         'name' => 'manager.api',
-        //         'state' => 'unknown',
-        //     ];
-        // }
-        // return $result;
+        $statusUrl = "http://127.0.0.1:{$webPort}/state";
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        curl_setopt($curl, CURLOPT_URL, $statusUrl);
 
-
-        $result = [
-            'name' => 'unknown',
-            'state' => 'unknown',
-            'version' => 'unknown',
-        ];
-
+        try {
+            $response = curl_exec($curl);
+            $data = json_decode($response, true);
+        } catch (Throwable $e) {
+            $data = null;
+        }
+        $result = [];
+        curl_close($curl);
+        if (
+            $data !== null
+            && array_key_exists('result', $data)
+            && is_array($data['result'])
+        ) {
+            $result = $data['result'];
+        } else {
+            $result[] = [
+                'name' =>self::SERVICE_CORE,
+                'state' => 'unknown',
+            ];
+        }
         return $result;
+
     }
 
     /**

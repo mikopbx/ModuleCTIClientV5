@@ -21,11 +21,11 @@ namespace Modules\ModuleCTIClientV5\Lib;
 
 use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Core\System\PBX;
+use MikoPBX\Core\System\System;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
-use Modules\ModuleCTIClient\Models\ModuleCTIClient;
 
 class CTIClientV5Conf extends ConfigClass
 {
@@ -214,6 +214,7 @@ class CTIClientV5Conf extends ConfigClass
      */
     public function onAfterModuleDisable(): void
     {
+        System::invokeActions(['manager' => 0]);
         $amigoDaemons = new AmigoDaemons();
         $amigoDaemons->stopAllServices();
         PBX::dialplanReload();
@@ -226,6 +227,7 @@ class CTIClientV5Conf extends ConfigClass
      */
     public function onAfterModuleEnable(): void
     {
+        System::invokeActions(['manager' => 0]);
         $amigoDaemons = new AmigoDaemons();
         $amigoDaemons->startAllServices();
         PBX::dialplanReload();
@@ -243,7 +245,7 @@ class CTIClientV5Conf extends ConfigClass
         $conf = '';
         $conf .= "\t" . 'same => n,UserEvent(InterceptionCTIv5,CALLERID: ${CALLERID(num)},chan1c: ${CHANNEL},FROM_DID: ${FROM_DID})' . "\n\t";
 
-        $module_settings = ModuleCTIClient::findFirst();
+        $module_settings = ModuleCTIClientV5::findFirst();
         if ($module_settings === null
             || intval($module_settings->setup_caller_id) === 1) {
             if (intval($module_settings->transliterate_caller_id) === 1) {

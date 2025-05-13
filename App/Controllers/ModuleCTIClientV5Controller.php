@@ -21,10 +21,16 @@
 namespace Modules\ModuleCTIClientV5\App\Controllers;
 
 use MikoPBX\AdminCabinet\Controllers\BaseController;
+use MikoPBX\Common\Models\Extensions;
+use MikoPBX\Common\Models\PbxSettings;
+use MikoPBX\Common\Models\Providers;
+
+use MikoPBX\Common\Models\Sip;
+use MikoPBX\Common\Models\Users;
 use MikoPBX\Modules\PbxExtensionUtils;
 use Modules\ModuleCTIClientV5\App\Forms\ModuleCTIClientV5Form;
 use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
-
+use Phalcon\Mvc\View;
 use function MikoPBX\Common\Config\appPath;
 
 class ModuleCTIClientV5Controller extends BaseController
@@ -41,7 +47,7 @@ class ModuleCTIClientV5Controller extends BaseController
         $this->moduleDir = PbxExtensionUtils::getModuleDir($this->moduleUniqueID);
 
         // Set the logo image path using the module's unique ID
-        $this->view->logoImagePath = "{$this->url->get()}assets/img/cache/{$this->moduleUniqueID}/logo.png";
+        $this->view->logoImagePath = "{$this->url->get()}assets/img/cache/{$this->moduleUniqueID}/logo.svg";
 
         // Set the submit mode to null
         $this->view->submitMode = null;
@@ -63,8 +69,8 @@ class ModuleCTIClientV5Controller extends BaseController
 
         // Add necessary JavaScript files to the footer collection
         $footerCollection->addJs('js/pbx/main/form.js', true);
-        $footerCollection->addJs("js/cache/{$this->moduleUniqueID}/module-cti-client-status-worker.js", true);
-        $footerCollection->addJs("js/cache/{$this->moduleUniqueID}/module-cti-client-index.js", true);
+        $footerCollection->addJs("js/cache/{$this->moduleUniqueID}/module-cti-client-v5-status-worker.js", true);
+        $footerCollection->addJs("js/cache/{$this->moduleUniqueID}/module-cti-client-v5-index.js", true);
 
         // Retrieve module settings
         $settings = ModuleCTIClientV5::findFirst();
@@ -137,4 +143,196 @@ class ModuleCTIClientV5Controller extends BaseController
         $this->view->success = true;
     }
 
+
+    /**
+     * Retrieves a list of PBX extensions with numbers and avatars in JSON format.
+     *
+     * Example:
+     * curl "http://127.0.0.1:{web_port}/admin-cabinet/module-c-t-i-client-v5/getExtensions"
+     */
+    public function getExtensionsAction(): void
+    {
+        $extensionTable = [];
+        $resultTable = [];
+        $pjsipPort = PbxSettings::getValueByKey('SIPPort');
+        $parameters = [
+            'models' => [
+                'Extensions' => Extensions::class,
+            ],
+            'conditions' => 'Extensions.is_general_user_number = 1',
+            'columns' => [
+                'userid' => 'Extensions.userid',
+                'username' => 'Users.username',
+                'secret' => 'Sip.secret',
+                'transport' => 'Sip.transport',
+                'dtmfmode' => 'Sip.dtmfmode',
+                'number' => 'Extensions.number',
+                'type' => 'Extensions.type',
+                'avatar' => 'Users.avatar',
+                'email' => 'Users.email',
+
+            ],
+            'order' => 'number',
+            'joins' => [
+                'Sip' => [
+                    0 => Sip::class,
+                    1 => 'Sip.extension=Extensions.number',
+                    2 => 'Sip',
+                    3 => 'LEFT',
+                ],
+                'Users' => [
+                    0 => Users::class,
+                    1 => 'Users.id = Extensions.userid',
+                    2 => 'Users',
+                    3 => 'INNER',
+                ],
+            ],
+        ];
+        $query = $this->di->get('modelsManager')->createBuilder($parameters)->getQuery();
+        $extensions = $query->execute();
+        foreach ($extensions as $extension) {
+            switch ($extension->type) {
+                case 'SIP':
+                    $extensionTable[$extension->userid]['userid'] = $extension->userid;
+                    $extensionTable[$extension->userid]['secret'] = $extension->secret;
+                    $extensionTable[$extension->userid]['number'] = $extension->number;
+                    $extensionTable[$extension->userid]['username'] = $extension->username;
+                    $extensionTable[$extension->userid]['email'] = $extension->email;
+                    $extensionTable[$extension->userid]['port'] = $pjsipPort;
+                    $extensionTable[$extension->userid]['transport'] = $extension->transport;
+                    $extensionTable[$extension->userid]['dtmfmode'] = $extension->dtmfmode;
+                    if (!empty($extension->avatar)) {
+                        $extensionTable[$extension->userid]['avatar'] = md5($extension->avatar);
+                    } else {
+                        $extensionTable[$extension->userid]['avatar'] = '';
+                    }
+                    if (!key_exists('mobile', $extensionTable[$extension->userid])) {
+                        $extensionTable[$extension->userid]['mobile'] = '';
+                    }
+
+                    break;
+                case 'EXTERNAL':
+                    $extensionTable[$extension->userid]['mobile'] = $extension->number;
+                    break;
+                default:
+            }
+        }
+
+        // Transform into an array with the same structure
+        foreach ($extensionTable as $extension) {
+            $resultTable[] = [
+                'userid' => $extension['userid'],
+                'number' => $extension['number'],
+                'secret' => base64_encode($extension['secret']),
+                'username' => $extension['username'],
+                'mobile' => $extension['mobile'],
+                'avatar' => $extension['avatar'],
+                'email' => $extension['email'],
+                'port' => $extension['port'],
+                'transport' => $extension['transport'],
+                'dtmfmode' => $extension['dtmfmode'],
+            ];
+        }
+
+
+        $this->view->setRenderLevel(View::LEVEL_NO_RENDER);
+        $this->response->setContentType('application/json', 'UTF-8');
+        $data = json_encode($resultTable);
+        $this->response->setContent($data);
+    }
+
+    /**
+     * Retrieves a list of queues and applications with human-readable names in JSON format.
+     *
+     * Example:
+     * curl "http://127.0.0.1:{web_port}/admin-cabinet/module-c-t-i-client-v5/getIdMatchNamesList"
+     */
+    public function getIdMatchNamesListAction(): void
+    {
+        $extensionTable = [];
+
+        $parameters = [
+            'conditions' => 'userid IS NULL',
+            'order' => 'number',
+        ];
+
+        $extensions = Extensions::find($parameters);
+        foreach ($extensions as $extension) {
+            switch (strtoupper($extension->type)) {
+                case Extensions::TYPE_PARKING:
+                    $extensionTable[] =
+                        [
+                            'name' => 'ParkingSlot',
+                            'number' => $extension->number,
+                            'type' => $extension->type,
+                            'uniqid' => '',
+                        ];
+                    break;
+                case Extensions::TYPE_CONFERENCE:
+                    $extensionTable[] =
+                        [
+                            'name' => $extension->ConferenceRooms->name,
+                            'number' => $extension->number,
+                            'type' => $extension->type,
+                            'uniqid' => $extension->ConferenceRooms->uniqid,
+                        ];
+                    break;
+                case Extensions::TYPE_QUEUE:
+                    $extensionTable[] =
+                        [
+                            'name' => $extension->CallQueues->name,
+                            'number' => $extension->number,
+                            'type' => $extension->type,
+                            'uniqid' => $extension->CallQueues->uniqid,
+                        ];
+                    break;
+                case Extensions::TYPE_DIALPLAN_APPLICATION:
+                    $extensionTable[] =
+                        [
+                            'name' => $extension->DialplanApplications->name,
+                            'number' => $extension->number,
+                            'type' => $extension->type,
+                            'uniqid' => $extension->DialplanApplications->uniqid,
+                        ];
+                    break;
+                case Extensions::TYPE_IVR_MENU:
+                    $extensionTable[] =
+                        [
+                            'name' => $extension->IvrMenu->name,
+                            'number' => $extension->number,
+                            'type' => $extension->type,
+                            'uniqid' => $extension->IvrMenu->uniqid,
+                        ];
+                    break;
+                case Extensions::TYPE_MODULES:
+                    $extensionTable[] =
+                        [
+                            'name' => $extension->callerid,
+                            'number' => $extension->number,
+                            'type' => $extension->type,
+                            'uniqid' => '',
+                        ];
+                    break;
+                default:
+            }
+        }
+
+        // Add the list of providers
+        $providers = Providers::find();
+        foreach ($providers as $provider) {
+            $modelType = ucfirst($provider->type);
+            $provByType = $provider->$modelType;
+            $extensionTable[] = [
+                'uniqid' => $provByType->uniqid,
+                'name' => $provByType->description,
+                'type' => 'PROVIDER',
+                'number' => '',
+            ];
+        }
+
+        $this->view->setRenderLevel(View::LEVEL_NO_RENDER);
+        $this->response->setContentType('application/json', 'UTF-8');
+        $data = json_encode($extensionTable);
+        $this->response->setContent($data);
+    }
 }
