@@ -54,7 +54,7 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
             if ($settings === null) {
                 $settings                     = new ModuleCTIClientV5();
                 $settings->debug_mode         = '0';
-                $settings->setup_caller_id    = '1';
+                $settings->setup_caller_id    = '0';
                 $settings->transliterate_caller_id = '0';
             }
 

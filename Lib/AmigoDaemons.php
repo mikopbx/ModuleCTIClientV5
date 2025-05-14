@@ -223,9 +223,16 @@ class AmigoDaemons extends Injectable
             'authorization_token' => $this->module_settings['nats_password'],
             'license_key' => PbxSettings::getValueByKey('PBXLicense')
         ];
+
+        // Config default file
         $config_default_file = "{$this->dirs['confDir']}/config.default.json";
         file_put_contents($config_default_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
+        
+        // Config file
+        $config_file = "{$this->dirs['confDir']}/config.json";
+        if (!file_exists($config_file)) {
+            file_put_contents($config_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        }
         if (file_exists($pid_file)) {
             $pid = file_get_contents($pid_file);
             Processes::mwExec("{$this->dirs['binDir']}/" . self::SERVICE_CORE . " reopen={$pid} > /dev/null 2> /dev/null");
