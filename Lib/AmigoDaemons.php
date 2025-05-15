@@ -212,10 +212,10 @@ class AmigoDaemons extends Injectable
                'dir' => $this->dirs['logDir'],
             ],
             'nats' => [
-                'port' => $this->getNatsPort(),
+                'port' => intval($this->getNatsPort()),
             ],
             'http_server' => [
-                'port' => $this->getNatsHttpPort(),
+                'port' => intval($this->getNatsHttpPort()),
             ],
             'store_dir' => $this->dirs['storeDir'],
             'binary_dir' => $this->dirs['binDir'],
@@ -559,7 +559,8 @@ class AmigoDaemons extends Injectable
      */
     public static function getCallerId(string $number): string
     {
-        $getNumberUrl = 'http://127.0.0.1:8224/getcallerid?number=' . $number;
+        $webPort = self::getNatsHttpPort();
+        $getNumberUrl = "http://127.0.0.1:{$webPort}/ivr/callerid?number={$number}";
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
@@ -576,12 +577,12 @@ class AmigoDaemons extends Injectable
         $result = '';
         if (
             $parsedAnswer !== null
-            && $parsedAnswer['result'] === 'Success'
+            && $parsedAnswer['ok'] === true
         ) {
-            if (!empty($parsedAnswer['data']['caller_id'])) {
-                $result = $parsedAnswer['data']['caller_id'];
-            } elseif (!empty($parsedAnswer['data']['client'])) {
-                $result = $parsedAnswer['data']['client'];
+            if (!empty($parsedAnswer['result']['caller_id'])) {
+                $result = $parsedAnswer['result']['caller_id'];
+            } elseif (!empty($parsedAnswer['result']['client'])) {
+                $result = $parsedAnswer['result']['client'];
             }
         }
 
