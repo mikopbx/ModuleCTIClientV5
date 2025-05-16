@@ -246,7 +246,7 @@ class AmigoDaemons extends Injectable
      */
     public static function getNatsPort(): string
     {
-        return '4222';
+        return '5222';
     }
 
     /**
@@ -256,7 +256,7 @@ class AmigoDaemons extends Injectable
      */
     public static function getNatsHttpPort(): string
     {
-        return '8222';
+        return '9222';
     }
 
 
