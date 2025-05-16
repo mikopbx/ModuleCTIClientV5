@@ -18,9 +18,10 @@
  */
 
 return [
-	'repModuleCTIClientV5'         => 'Модуль панель телефонии 5 - %repesent%',
-	'mo_ModuleModuleCTIClientV5'   => 'Модуль панель телефонии 5',
-    'BreadcrumbModuleCTIClientV5'  => 'Панель телефонии 5',
-    'SubHeaderModuleCTIClientV5'   => 'Панель телефонии 5',
+	'repModuleCTIClientV5'         => 'Модуль панель телефонии 5.0 - %repesent%',
+	'mo_ModuleModuleCTIClientV5'   => 'Модуль панель телефонии 5.0',
+    'BreadcrumbModuleCTIClientV5'  => 'Панель телефонии 5.0',
+    'SubHeaderModuleCTIClientV5'   => 'Модуль интеграции 1С с чатами и звонками',
     'module_template_AddNewRecord'  => 'Добавить',
+    'fw_modulecticlientv5Description' => 'CTI CLIENT - Панель телефонии 5.0 для 1С',
 ];

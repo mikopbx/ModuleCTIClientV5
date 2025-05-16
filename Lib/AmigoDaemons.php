@@ -389,7 +389,7 @@ class AmigoDaemons extends Injectable
             'user' => CTIClientV5Conf::MODULE_AMI_USER,
             'password' => $this->module_settings['ami_password'],
             'host' => '127.0.0.1',
-            'port' => PbxSettings::getValueByKey('AMIPort'),
+            'port' => intval(PbxSettings::getValueByKey('AMIPort')),
         ];
         $UID = md5($this->module_settings['asterisk_uid']);
 
