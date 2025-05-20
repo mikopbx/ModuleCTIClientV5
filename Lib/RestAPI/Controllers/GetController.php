@@ -34,23 +34,8 @@ use MikoPBX\Common\Models\Users;
 
 class GetController extends ModulesControllerBase
 {
-    private array $module_settings = [];
     private string $moduleUniqueID = 'ModuleCTIClientV5';
 
-     /**
-     * Constructor for the class.
-     */
-    public function __construct()
-    {
-        // Check if the module is enabled
-        if (PbxExtensionUtils::isEnabled($this->moduleUniqueID)) {
-            // Retrieve the module settings from the database
-            $module_settings = ModuleCTIClientV5::findFirst();
-            if ($module_settings !== null) {
-                $this->module_settings = $module_settings->toArray();
-            }
-        }
-    }
 
     /**
      * Get the status of the module.
@@ -62,7 +47,7 @@ class GetController extends ModulesControllerBase
      */
     public function getModuleStatusAction(): void
     {
-        $res= $this->checkModuleWorkProperly();
+        $res = $this->checkModuleWorkProperly();
         $this->response->setJsonContent($res->getResult());
         $this->response->send();
     }
@@ -272,27 +257,8 @@ class GetController extends ModulesControllerBase
 
             return $res;
         }
-        $statuses = $this->checkWorkerStatuses();
-        $res->success = true;
-        foreach ($statuses as $workerStatus) {
-            if (!$res->success) {
-                break;
-            }
-            $res->success = array_key_exists('state', $workerStatus) && $workerStatus['state'] === 'ok';
-        }
-
-        $res->data['statuses'] = $statuses;
-        return $res;
-    }
-
-    /**
-     * Check the status of Core server.
-     *
-     * @return array
-     */
-    private function checkWorkerStatuses(): array
-    {
         $webPort = AmigoDaemons::getNatsHttpPort();
+        $authorizationToken = ModuleCTIClientV5::findFirst()->authorization_token;
 
         $statusUrl = "http://127.0.0.1:{$webPort}/state";
         $curl = curl_init();
@@ -301,7 +267,7 @@ class GetController extends ModulesControllerBase
         curl_setopt($curl, CURLOPT_URL, $statusUrl);
         
         // Add authorization header
-        $headers = ["Authorization: Token {$this->module_settings['authorization_token']}"];
+        $headers = ["Authorization: Token {$authorizationToken}"];
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
         try {
@@ -329,7 +295,9 @@ class GetController extends ModulesControllerBase
                 $result['pid'] = $pid;
             }
         }
-        return $result;
 
+        $res->success = true;
+        $res->data['statuses'] = $result;
+        return $res;
     }
 }
