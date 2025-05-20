@@ -19,12 +19,12 @@
 
 namespace Modules\ModuleCTIClientV5\Lib;
 
-use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Core\System\PBX;
 use MikoPBX\Core\System\System;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
+use Modules\ModuleCTIClientV5\Lib\RestAPI\Controllers\GetController;
 use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
 
 class CTIClientV5Conf extends ConfigClass
@@ -141,11 +141,6 @@ class CTIClientV5Conf extends ConfigClass
         $res->processor = __METHOD__;
         $action         = strtoupper($request['action']);
         switch ($action) {
-            case 'CHECK':
-                // Проверка работы сервисов, выполняется при обновлении статуса или сохрании настроек
-                $amigoDaemons = new AmigoDaemons();
-                $res          = $amigoDaemons->checkModuleWorkProperly();
-                break;
             default:
                 $res->success    = false;
                 $res->messages[] = 'API action not found in moduleRestAPICallback ModuleCTIClientV5';
@@ -154,6 +149,24 @@ class CTIClientV5Conf extends ConfigClass
         return $res;
     }
 
+    /**
+     * Returns array of additional routes for PBXCoreREST interface from module
+     *
+     * [ControllerClass, ActionMethod, RequestTemplate, HttpMethod, RootUrl, NoAuth ]
+     *
+     * @return array
+     * @example
+     *  [[GetController::class, 'callAction', '/pbxcore/api/backup/{actionName}', 'get', '/', false],
+     */
+    public function getPBXCoreRESTAdditionalRoutes(): array
+    {
+        $routes = [
+            [GetController::class, 'getModuleStatusAction',         '/pbxcore/api/module-cti-client-v5/getModuleStatus', 'get', '/', true],
+            [GetController::class, 'getExtensionsAction',    '/pbxcore/api/module-cti-client-v5/getExtensions', 'get', '/', true],
+            [GetController::class, 'getIdMatchNamesListAction',    '/pbxcore/api/module-cti-client-v5/getIdMatchNamesList', 'get', '/', true],
+        ];
+        return $routes;
+    }
 
     /**
      * Returns module workers to start it at WorkerSafeScript

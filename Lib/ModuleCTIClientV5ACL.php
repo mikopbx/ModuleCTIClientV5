@@ -20,12 +20,13 @@
 namespace Modules\ModuleCTIClientV5\Lib;
 
 use Modules\ModuleCTIClientV5\App\Controllers\ModuleCTIClientV5Controller;
+use Modules\ModuleCTIClientV5\Lib\RestAPI\Controllers\GetController;
 use Modules\ModuleUsersUI\Lib\ACL\ACLInterface;
 use Modules\ModuleUsersUI\Lib\EndpointConstants as RestEndpoints;
 
 class ModuleCTIClientACL implements ACLInterface
 {
-    const API_MODULE_CTI_CLIENT = '/pbxcore/api/modules/module-c-t-i-client-v5';
+    const API_MODULE_CTI_CLIENT = '/pbxcore/api/module-cti-client-v5';
 
     /**
      * Prepares list of linked controllers to other controllers to hide it from UI
@@ -38,7 +39,6 @@ class ModuleCTIClientACL implements ACLInterface
         return [
             ModuleCTIClientV5Controller::class => [
                 RestEndpoints::ACTION_INDEX => [
-                    self::API_MODULE_CTI_CLIENT => '*',
                     ModuleCTIClientV5Controller::class => [
                         'save',
                     ]
@@ -64,13 +64,9 @@ class ModuleCTIClientACL implements ACLInterface
     public static function getAlwaysDenied(): array
     {
         return [
-            ModuleCTIClientV5Controller::class => [
-                'getExtensions',
-                'getIdMatchNamesList',
-                'updateUserAvatar',
-                'updateUserMobile',
-                'getUserAvatar',
-                'updateUserEmail'
+            GetController::class => [
+                'getExtensionsAction',
+                'getIdMatchNamesListAction',
             ]
         ];
     }

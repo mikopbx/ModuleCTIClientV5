@@ -37,7 +37,6 @@ class ModuleCTIClientV5 extends ModulesModelsBase
      */
     public $id;
 
-
     /**
      * @var string|null Debug mode of the module
      *

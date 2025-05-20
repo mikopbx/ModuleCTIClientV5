@@ -11,6 +11,7 @@
     {# general tab #}
     <div class="ui bottom attached tab segment active" data-tab="settings">
         <div class="field">
+            <label for="authorization_token">{{ t._('mod_cti_AuthorizationToken') }}</label>
             {{ form.render('authorization_token') }}
         </div>
         <div class="field">

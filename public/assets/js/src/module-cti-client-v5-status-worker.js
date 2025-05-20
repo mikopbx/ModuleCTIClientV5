@@ -43,7 +43,7 @@ const moduleCTIClientV5ConnectionCheckWorker = {
 	worker() {
 		if (moduleCTIClientV5ConnectionCheckWorker.$statusToggle.checkbox('is checked')) {
 			$.api({
-				url: `${Config.pbxUrl}/pbxcore/api/modules/moduleCTIClientV5/check`,
+				url: `${Config.pbxUrl}/pbxcore/api/module-cti-client-v5/getModuleStatus`,
 				on: 'now',
 				successTest: PbxApi.successTest,
 				onComplete() {

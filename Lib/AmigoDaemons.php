@@ -2,7 +2,7 @@
 
 /*
  * MikoPBX - free phone system for small business
- * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
+ * Copyright © 2017-2025 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ use MikoPBX\Core\System\Processes;
 use MikoPBX\Core\System\System;
 use MikoPBX\Core\System\Util;
 use MikoPBX\Modules\PbxExtensionUtils;
-use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
 use Phalcon\Di\Injectable;
 use Throwable;
@@ -465,84 +464,6 @@ class AmigoDaemons extends Injectable
             $module_version_file,
             $moduleVersion
         );
-
-    }
-
-    /**
-     * Check if the module is working properly.
-     *
-     * @return PBXApiResult An object containing the result of the API call.
-     *
-     */
-    public function checkModuleWorkProperly(): PBXApiResult
-    {
-        $res = new PBXApiResult();
-        $res->processor = __METHOD__;
-
-        $moduleEnabled = PbxExtensionUtils::isEnabled($this->moduleUniqueID);
-        if (!$moduleEnabled) {
-            $res->data['statuses'] = 'Module disabled';
-
-            return $res;
-        }
-        $statuses = $this->checkWorkerStatuses();
-        $res->success = true;
-        foreach ($statuses as $workerStatus) {
-            if (!$res->success) {
-                break;
-            }
-            $res->success = array_key_exists('state', $workerStatus) && $workerStatus['state'] === 'ok';
-        }
-
-        $res->data['statuses'] = $statuses;
-        return $res;
-    }
-
-    /**
-     * Check the status of Core server.
-     *
-     * @return array
-     */
-    private function checkWorkerStatuses(): array
-    {
-        $webPort = self::getNatsHttpPort();
-
-        $statusUrl = "http://127.0.0.1:{$webPort}/state";
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-        curl_setopt($curl, CURLOPT_URL, $statusUrl);
-        
-        // Add authorization header
-        $headers = ["Authorization: Token {$this->module_settings['authorization_token']}"];
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-
-        try {
-            $response = curl_exec($curl);
-            $data = json_decode($response, true);
-        } catch (Throwable $e) {
-            $data = null;
-        }
-        $result = [];
-        curl_close($curl);
-        if (
-            $data !== null
-            && array_key_exists('result', $data)
-            && is_array($data['result'])
-        ) {
-            $result = $data['result'];
-        } else {
-            $result = [
-                'name' => self::SERVICE_CORE,
-                'state' => 'unknown',
-            ];
-            $pid = Processes::getPidOfProcess(self::SERVICE_CORE);
-            if (!empty($pid)) {
-                $result['state'] = 'ok';
-                $result['pid'] = $pid;
-            }
-        }
-        return $result;
 
     }
 

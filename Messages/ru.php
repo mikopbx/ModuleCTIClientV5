@@ -20,12 +20,12 @@
 return [
 	'repModuleCTIClientV5'         => 'Модуль панель телефонии 5.0 - %repesent%',
 	'mo_ModuleModuleCTIClientV5'   => 'Модуль панель телефонии 5.0',
-    'BreadcrumbModuleCTIClientV5'  => 'Панель телефонии 5.0',
+    'BreadcrumbModuleCTIClientV5'  => 'Панель телефонии 5.0 для 1С',
     'SubHeaderModuleCTIClientV5'   => 'Модуль интеграции 1С с чатами и звонками',
     'module_template_AddNewRecord'  => 'Добавить',
     'fw_modulecticlientv5Description' => 'CTI CLIENT - Панель телефонии 5.0 для 1С',
     'mod_cti_ResetConfigToDefault' => 'Сбросить настройки модуля',
     'mod_cti_EnableSetCallerID' => 'Включить установку CallerID',
     'mod_cti_TransliterateCallerID' => 'Транслитерировать CallerID',
-    'mod_cti_AuthorizationToken' => 'Токен авторизации',
+    'mod_cti_AuthorizationToken' => 'Токен авторизации для 1С',
 ];
