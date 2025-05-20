@@ -48,17 +48,8 @@ class CTIClientV5Conf extends ConfigClass
      */
     public function modelsEventChangeData($data): void
     {
-        $needRestartServices = false;
-        if ($data['model'] === PbxSettings::class
-            && $data['recordId'] === 'PBXLicense') {
-            $needRestartServices = true;
-        }
         if ($data['model'] === ModuleCTIClientV5::class) {
-            $needRestartServices = true;
             PBX::dialplanReload();
-        }
-
-        if ($needRestartServices) {
             $amigoDaemons = new AmigoDaemons();
             $amigoDaemons->startAllServices(true);
         }

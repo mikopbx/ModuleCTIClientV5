@@ -62,8 +62,8 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
                 $settings->ami_password = MikoPBXVersion::generateRandomPassword(16);
             }
 
-            if (empty($settings->nats_password)) {
-                $settings->nats_password = MikoPBXVersion::generateRandomPassword(16);
+            if (empty($settings->authorization_token)) {
+                $settings->authorization_token = MikoPBXVersion::generateRandomPassword(16);
             }
 
             if (empty($settings->asterisk_uid)) {

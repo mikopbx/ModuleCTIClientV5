@@ -204,7 +204,20 @@ class AmigoDaemons extends Injectable
      */
     private function generateCoreConf(): void
     {
-        $pid_file = "{$this->dirs['pidDir']}/core.pid";
+        $config_file = "{$this->dirs['confDir']}/config.json";
+        $config_default_file = "{$this->dirs['confDir']}/config.default.json";
+
+        // Reset settings and restart services
+        if (intval($this->module_settings['reset_settings']) === 1) {
+            $module_settings = ModuleCTIClientV5::findFirst();
+            if ($module_settings !== null) {
+                $module_settings->reset_settings = '0';
+                $module_settings->save();
+            }
+            if (!file_exists($config_file)) {
+                unlink($config_file);
+            }
+        }
 
         $settings = [
             'log' => [
@@ -220,22 +233,18 @@ class AmigoDaemons extends Injectable
             'store_dir' => $this->dirs['storeDir'],
             'binary_dir' => $this->dirs['binDir'],
             'session_dir' => $this->dirs['sessionsDir'],
-            'authorization_token' => $this->module_settings['nats_password'],
+            'authorization_token' => $this->module_settings['authorization_token'],
             'license_key' => PbxSettings::getValueByKey('PBXLicense')
         ];
 
         // Config default file
-        $config_default_file = "{$this->dirs['confDir']}/config.default.json";
         file_put_contents($config_default_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         
         // Config file
-        $config_file = "{$this->dirs['confDir']}/config.json";
         if (!file_exists($config_file)) {
             file_put_contents($config_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        }
-        if (file_exists($pid_file)) {
-            $pid = file_get_contents($pid_file);
-            Processes::mwExec("{$this->dirs['binDir']}/" . self::SERVICE_CORE . " reopen={$pid} > /dev/null 2> /dev/null");
+            $path = "{$this->dirs['binDir']}/" . self::SERVICE_CORE;
+            Processes::processWorker($path, '', self::SERVICE_CORE, 'stop');
         }
     }
 
@@ -476,10 +485,7 @@ class AmigoDaemons extends Injectable
 
             return $res;
         }
-        $statuses = [];
-        $statuses[] = $this->checkCoreStatus();
-        $statuses = array_merge($statuses, $this->checkWorkerStatuses());
-
+        $statuses = $this->checkWorkerStatuses();
         $res->success = true;
         foreach ($statuses as $workerStatus) {
             if (!$res->success) {
@@ -506,6 +512,10 @@ class AmigoDaemons extends Injectable
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         curl_setopt($curl, CURLOPT_URL, $statusUrl);
+        
+        // Add authorization header
+        $headers = ["Authorization: Token {$this->module_settings['authorization_token']}"];
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
         try {
             $response = curl_exec($curl);
@@ -522,33 +532,18 @@ class AmigoDaemons extends Injectable
         ) {
             $result = $data['result'];
         } else {
-            $result[] = [
-                'name' =>self::SERVICE_CORE,
+            $result = [
+                'name' => self::SERVICE_CORE,
                 'state' => 'unknown',
             ];
+            $pid = Processes::getPidOfProcess(self::SERVICE_CORE);
+            if (!empty($pid)) {
+                $result['state'] = 'ok';
+                $result['pid'] = $pid;
+            }
         }
         return $result;
 
-    }
-
-    /**
-     * Check the status of the core process.
-     *
-     * @return array
-     */
-    private function checkCoreStatus(): array
-    {
-        $result = [
-            'name' => self::SERVICE_CORE,
-            'state' => 'unknown',
-        ];
-        $pid = Processes::getPidOfProcess(self::SERVICE_CORE);
-        if (!empty($pid)) {
-            $result['state'] = 'ok';
-            $result['pid'] = $pid;
-        }
-
-        return $result;
     }
 
     /**
@@ -565,6 +560,14 @@ class AmigoDaemons extends Injectable
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
         curl_setopt($curl, CURLOPT_URL, $getNumberUrl);
+        
+        // This is a static method, so we need to get the token from a module instance
+        $moduleObj = new ModuleCTIClientV5();
+        $module_settings = $moduleObj->toArray();
+        if (!empty($module_settings['authorization_token'])) {
+            $headers = ["Authorization: Token {$module_settings['authorization_token']}"];
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        }
 
         try {
             $response = curl_exec($curl);

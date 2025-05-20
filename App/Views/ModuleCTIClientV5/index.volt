@@ -11,6 +11,9 @@
     {# general tab #}
     <div class="ui bottom attached tab segment active" data-tab="settings">
         <div class="field">
+            {{ form.render('authorization_token') }}
+        </div>
+        <div class="field">
             <div class="ui segment">
                 <div class="ui toggle checkbox " id="setup-caller-id-toggle">
                     {{ form.render('setup_caller_id') }}
@@ -23,6 +26,14 @@
                 <div class="ui toggle checkbox " id="transliterate-caller-id-toggle">
                     {{ form.render('transliterate_caller_id') }}
                     <label for="transliterate_caller_id">{{ t._('mod_cti_TransliterateCallerID') }}</label>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+             <div class="ui segment">
+                <div class="ui toggle checkbox " id="reset-settings-toggle">
+                    {{ form.render('reset_settings') }}
+                    <label for="reset_settings">{{ t._('mod_cti_ResetConfigToDefault') }}</label>
                 </div>
             </div>
         </div>

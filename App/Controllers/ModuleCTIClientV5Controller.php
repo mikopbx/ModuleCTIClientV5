@@ -112,10 +112,12 @@ class ModuleCTIClientV5Controller extends BaseController
             switch ($key) {
                 case 'id':
                 case 'ami_password':
-                case 'nats_password':
+                case 'authorization_token':
+                case 'asterisk_uid':
                     break;
                 case 'setup_caller_id':
                 case 'transliterate_caller_id':
+                case 'reset_settings':
                     if (isset($data[$key])) {
                         $record->$key = ($data[$key] === 'on') ? '1' : '0';
                     }

@@ -22,7 +22,7 @@ namespace Modules\ModuleCTIClientV5\App\Forms;
 
 use Phalcon\Forms\Element\Check;
 use Phalcon\Forms\Form;
-
+use Phalcon\Forms\Element\Text;
 class ModuleCTIClientV5Form extends Form
 {
     public function initialize($entity = null)
@@ -32,6 +32,12 @@ class ModuleCTIClientV5Form extends Form
 
         // Set Transliterate caller ID
         $this->addCheckBox('transliterate_caller_id', intval($entity->transliterate_caller_id) === 1);
+
+        // Reset settings to default
+        $this->addCheckBox('reset_settings', false);
+
+        // Show auth token
+        $this->add(new Text('authorization_token', ['value' => $entity->authorization_token, 'readonly' => true]));
     }
 
     /**
