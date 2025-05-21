@@ -80,6 +80,13 @@ class ModuleCTIClientV5 extends ModulesModelsBase
     public ?string $transliterate_caller_id = '0';
 
     /**
+     * @var string|null Whether to reset the settings
+     *
+     * @Column(type='string', length=1, nullable=true, default='0')
+     */
+    public ?string $reset_settings = '0';
+
+    /**
      * Initialize model for module
      * @return void
      */
