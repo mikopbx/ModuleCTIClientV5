@@ -45,6 +45,8 @@ class AmigoDaemons extends Injectable
     public array $dirs;
     private array $module_settings = [];
     private string $moduleUniqueID = 'ModuleCTIClientV5';
+    public string $config_file;
+    public string $config_default_file;
 
     /**
      * Constructor for the class.
@@ -65,6 +67,9 @@ class AmigoDaemons extends Injectable
 
         // Get the module directories
         $this->dirs = $this->getModuleDirs();
+
+        $this->config_file = "{$this->dirs['confDir']}/config.json";
+        $this->config_default_file = "{$this->dirs['confDir']}/config.default.json";
     }
 
     /**
@@ -203,21 +208,6 @@ class AmigoDaemons extends Injectable
      */
     private function generateCoreConf(): void
     {
-        $config_file = "{$this->dirs['confDir']}/config.json";
-        $config_default_file = "{$this->dirs['confDir']}/config.default.json";
-
-        // Reset settings and restart services
-        if (intval($this->module_settings['reset_settings']) === 1) {
-            $module_settings = ModuleCTIClientV5::findFirst();
-            if ($module_settings !== null) {
-                $module_settings->reset_settings = '0';
-                $module_settings->save();
-            }
-            if (!file_exists($config_file)) {
-                unlink($config_file);
-            }
-        }
-
         $settings = [
             'log' => [
                'level' => intval($this->module_settings['debug_mode']) === 1 ? 6 : 4,
@@ -235,15 +225,18 @@ class AmigoDaemons extends Injectable
             'authorization_token' => $this->module_settings['authorization_token'],
             'license_key' => PbxSettings::getValueByKey('PBXLicense')
         ];
-
         // Config default file
-        file_put_contents($config_default_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        file_put_contents($this->config_default_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         
         // Config file
-        if (!file_exists($config_file)) {
-            file_put_contents($config_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-            $path = "{$this->dirs['binDir']}/" . self::SERVICE_CORE;
-            Processes::processWorker($path, '', self::SERVICE_CORE, 'stop');
+        if (!file_exists($this->config_file)) {
+            file_put_contents($this->config_file, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        } else {
+            $configContent = json_decode(file_get_contents($this->config_file), true);
+            if ($configContent['authorization_token'] !== $this->module_settings['authorization_token']) {
+                $configContent['authorization_token'] = $this->module_settings['authorization_token'];
+                file_put_contents($this->config_file, json_encode($configContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            }
         }
     }
 

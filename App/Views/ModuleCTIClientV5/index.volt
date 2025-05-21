@@ -12,7 +12,10 @@
     <div class="ui bottom attached tab segment active" data-tab="settings">
         <div class="field">
             <label for="authorization_token">{{ t._('mod_cti_AuthorizationToken') }}</label>
-            {{ form.render('authorization_token') }}
+            <div class="ui action input">
+                {{ form.render('authorization_token') }}
+                <button class="ui button" type="button" id="regenerate-token-btn">{{ t._('mod_cti_RegenerateToken') }}</button>
+            </div>
         </div>
         <div class="field">
             <div class="ui segment">
@@ -32,7 +35,7 @@
         </div>
         <div class="field">
              <div class="ui segment">
-                <div class="ui toggle checkbox " id="reset-settings-toggle">
+                <div class="ui toggle checkbox" id="reset-settings-toggle">
                     {{ form.render('reset_settings') }}
                     <label for="reset_settings">{{ t._('mod_cti_ResetConfigToDefault') }}</label>
                 </div>

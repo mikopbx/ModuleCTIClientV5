@@ -35,14 +35,14 @@ class ModuleCTIClientV5Controller extends BaseController
      */
     public function initialize(): void
     {
+        // Call the initialize method of the parent class
+         parent::initialize();
+
         // Set the logo image path using the module's unique ID
         $this->view->logoImagePath = "{$this->url->get()}assets/img/cache/{$this->moduleUniqueID}/logo.svg";
 
         // Set the submit mode to null
         $this->view->submitMode = null;
-
-        // Call the initialize method of the parent class
-        parent::initialize();
     }
 
 
@@ -101,7 +101,6 @@ class ModuleCTIClientV5Controller extends BaseController
             switch ($key) {
                 case 'id':
                 case 'ami_password':
-                case 'authorization_token':
                 case 'asterisk_uid':
                     break;
                 case 'setup_caller_id':

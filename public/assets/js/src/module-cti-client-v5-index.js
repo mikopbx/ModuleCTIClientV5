@@ -25,6 +25,8 @@ const moduleCTIClientV5 = {
 	$debugToggle: $('#debug-mode-toggle'),
 	$dirrtyField: $('#dirrty'),
 	$debugTab: $('#module-cti-client-tabs .item[data-tab="debug"]'),
+	$regenerateTokenBtn: $('#regenerate-token-btn'),
+	$authTokenField: $('input[name="authorization_token"]'),
 	validateRules: {
 	},
 	initialize() {
@@ -52,7 +54,32 @@ const moduleCTIClientV5 = {
 		moduleCTIClientV5.initializeForm();
 		moduleCTIClientV5.checkStatusToggle();
 		moduleCTIClientV5.setCallerIdToggle();
+		moduleCTIClientV5.initRegenerateTokenButton();
 		window.addEventListener('ModuleStatusChanged', moduleCTIClientV5.checkStatusToggle);
+	},
+	/**
+	 * Initialize regenerate token button click handler
+	 */
+	initRegenerateTokenButton() {
+		moduleCTIClientV5.$regenerateTokenBtn.on('click', (e) => {
+			e.preventDefault();
+			$.api({
+				url: `${Config.pbxUrl}/pbxcore/api/module-cti-client-v5/regenerateAuthorizationToken`,
+				on: 'now',
+				successTest(response) {
+					return response.result === true;
+				},
+				onSuccess(response) {
+					if (response.data && response.data.newToken) {
+						moduleCTIClientV5.$formObj.form('set value', 'authorization_token', response.data.newToken);	
+						Form.dataChanged();
+					}
+				},
+				onFailure(response) {
+					UserMessage.showError(response.message);
+				},
+			});
+		});
 	},
 	/**
 	 * Проверка состояния модуля

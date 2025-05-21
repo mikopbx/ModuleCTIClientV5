@@ -21,6 +21,7 @@ namespace Modules\ModuleCTIClientV5\Lib;
 
 use MikoPBX\Core\System\PBX;
 use MikoPBX\Core\System\System;
+use MikoPBX\Core\System\SystemMessages;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
@@ -49,8 +50,23 @@ class CTIClientV5Conf extends ConfigClass
     public function modelsEventChangeData($data): void
     {
         if ($data['model'] === ModuleCTIClientV5::class) {
-            PBX::dialplanReload();
+
             $amigoDaemons = new AmigoDaemons();
+            // Reset config to default and restart services
+            if (in_array('reset_settings', $data['changedFields'])) {    
+                $module_settings = ModuleCTIClientV5::findFirst();
+                if ($module_settings !== null and intval($module_settings->reset_settings) === 1) {
+                    $module_settings->reset_settings = '0';
+                    $module_settings->save();
+                    if (file_exists($amigoDaemons->config_file)) {
+                        SystemMessages::sysLogMsg(__METHOD__, 'CTI client v5.0 reset settings', LOG_INFO);
+                        unlink($amigoDaemons->config_file);
+                        return; //Config will be generated again after save settings
+                    }
+                }
+            }
+            // Restart services
+            PBX::dialplanReload();   
             $amigoDaemons->startAllServices(true);
         }
     }
@@ -164,6 +180,7 @@ class CTIClientV5Conf extends ConfigClass
             [GetController::class, 'getModuleStatusAction',         '/pbxcore/api/module-cti-client-v5/getModuleStatus', 'get', '/', true],
             [GetController::class, 'getExtensionsAction',    '/pbxcore/api/module-cti-client-v5/getExtensions', 'get', '/', true],
             [GetController::class, 'getIdMatchNamesListAction',    '/pbxcore/api/module-cti-client-v5/getIdMatchNamesList', 'get', '/', true],
+            [GetController::class, 'regenerateAuthorizationTokenAction',    '/pbxcore/api/module-cti-client-v5/regenerateAuthorizationToken', 'get', '/', true],
         ];
         return $routes;
     }

@@ -19,18 +19,19 @@
  */
 
 namespace Modules\ModuleCTIClientV5\Lib\RestAPI\Controllers;
-use MikoPBX\Core\System\Processes;
-use MikoPBX\Modules\PbxExtensionUtils;
-use MikoPBX\PBXCoreREST\Controllers\Modules\ModulesControllerBase;
-use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
-use Modules\ModuleCTIClientV5\Lib\AmigoDaemons;
-use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
-use Throwable;
 use MikoPBX\Common\Models\Extensions;
 use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Common\Models\Providers;
 use MikoPBX\Common\Models\Sip;
 use MikoPBX\Common\Models\Users;
+use MikoPBX\Core\System\Processes;
+use MikoPBX\Modules\PbxExtensionUtils;
+use MikoPBX\PBXCoreREST\Controllers\Modules\ModulesControllerBase;
+use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
+use Modules\ModuleCTIClientV5\Lib\AmigoDaemons;
+use Modules\ModuleCTIClientV5\Lib\MikoPBXVersion;
+use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
+use Throwable;
 
 class GetController extends ModulesControllerBase
 {
@@ -276,28 +277,43 @@ class GetController extends ModulesControllerBase
         } catch (Throwable $e) {
             $data = null;
         }
-        $result = [];
         curl_close($curl);
-        if (
-            $data !== null
+        if ($data !== null
             && array_key_exists('result', $data)
             && is_array($data['result'])
         ) {
-            $result = $data['result'];
+            $res->data['statuses'] = $data['result'];
         } else {
-            $result = [
+            $res->data['statuses'] = [[
                 'name' => AmigoDaemons::SERVICE_CORE,
                 'state' => 'unknown',
-            ];
-            $pid = Processes::getPidOfProcess(AmigoDaemons::SERVICE_CORE);
-            if (!empty($pid)) {
-                $result['state'] = 'ok';
-                $result['pid'] = $pid;
-            }
+            ]];
         }
 
         $res->success = true;
-        $res->data['statuses'] = $result;
+        foreach ($res->data['statuses'] as $workerStatus) {
+            if (!$res->success) {
+                break;
+            }
+            $res->success = array_key_exists('state', $workerStatus) && $workerStatus['state'] === 'ok';
+        }
         return $res;
+    }
+
+    /**
+     * Regenerates the authorization token for the module.
+     *
+     * Example:
+     * curl "http://127.0.0.1:{web_port}/pbxcore/api/module-cti-client-v5/regenerateAuthorizationToken"
+     *
+     * @return void
+     */
+    public function regenerateAuthorizationTokenAction(): void
+    {
+        $res = new PBXApiResult();
+        $res->success = true;
+        $res->data['newToken'] = MikoPBXVersion::generateRandomPassword(16);
+        $this->response->setJsonContent($res->getResult());
+        $this->response->send();
     }
 }

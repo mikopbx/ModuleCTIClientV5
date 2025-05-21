@@ -28,4 +28,5 @@ return [
     'mod_cti_EnableSetCallerID' => 'Включить установку CallerID',
     'mod_cti_TransliterateCallerID' => 'Транслитерировать CallerID',
     'mod_cti_AuthorizationToken' => 'Токен авторизации для 1С',
+    'mod_cti_RegenerateToken' => 'Получить новый токен',
 ];
