@@ -113,7 +113,9 @@ const moduleCTIClientV5 = {
 		return result;
 	},
 	cbAfterSendForm() {
-		moduleCTIClientV5.initialize();
+		setTimeout(() => {
+			moduleCTIClientV5ConnectionCheckWorker.initialize();
+		}, 5000);
 	},
 	initializeForm() {
 		Form.$formObj = moduleCTIClientV5.$formObj;

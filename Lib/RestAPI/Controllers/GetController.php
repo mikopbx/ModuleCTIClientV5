@@ -278,11 +278,20 @@ class GetController extends ModulesControllerBase
             $data = null;
         }
         curl_close($curl);
-        if ($data !== null
-            && array_key_exists('result', $data)
-            && is_array($data['result'])
-        ) {
-            $res->data['statuses'] = $data['result'];
+        
+        // Check if we have a valid response
+        if ($data !== null && array_key_exists('result', $data)) {
+            // Check if main status is ok
+            if (isset($data['result']['status']) && $data['result']['status'] === 'ok') {
+                $res->success = true;
+                $res->data['statuses'] = $data['result'];
+                return $res;
+            }
+            
+            // Otherwise process as before
+            if (is_array($data['result'])) {
+                $res->data['statuses'] = $data['result'];
+            }
         } else {
             $res->data['statuses'] = [[
                 'name' => AmigoDaemons::SERVICE_CORE,
@@ -290,13 +299,17 @@ class GetController extends ModulesControllerBase
             ]];
         }
 
+        // Check individual services only if main status check failed
         $res->success = true;
-        foreach ($res->data['statuses'] as $workerStatus) {
-            if (!$res->success) {
-                break;
+        if (is_array($res->data['statuses'])) {
+            foreach ($res->data['statuses'] as $workerStatus) {
+                if (!$res->success) {
+                    break;
+                }
+                $res->success = array_key_exists('state', $workerStatus) && $workerStatus['state'] === 'ok';
             }
-            $res->success = array_key_exists('state', $workerStatus) && $workerStatus['state'] === 'ok';
         }
+        
         return $res;
     }
 

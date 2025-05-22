@@ -110,7 +110,7 @@ const moduleCTIClientV5ConnectionCheckWorker = {
 									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionTo1CWait');
 								}
 							} else if (countHealthy < 6) {
-								if (moduleCTIClientV5ConnectionCheckWorker.errorCounts < 10) {
+								if (moduleCTIClientV5ConnectionCheckWorker.errorCounts < 30) {
 									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionProgress');
 								} else {
 									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionError');
