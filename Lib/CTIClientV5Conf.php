@@ -21,7 +21,6 @@ namespace Modules\ModuleCTIClientV5\Lib;
 
 use MikoPBX\Core\System\PBX;
 use MikoPBX\Core\System\System;
-use MikoPBX\Core\System\SystemMessages;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
@@ -59,7 +58,6 @@ class CTIClientV5Conf extends ConfigClass
                     $module_settings->reset_settings = '0';
                     $module_settings->save();
                     if (file_exists($amigoDaemons->config_file)) {
-                        SystemMessages::sysLogMsg(__METHOD__, 'CTI client v5.0 reset settings', LOG_INFO);
                         unlink($amigoDaemons->config_file);
                         return; //Config will be generated again after save settings
                     }
