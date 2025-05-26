@@ -67,7 +67,7 @@ class PbxExtensionSetup extends PbxExtensionSetupBase
             }
 
             if (empty($settings->asterisk_uid)) {
-                $settings->asterisk_uid = MikoPBXVersion::generateRandomPassword(16);
+                $settings->asterisk_uid = MikoPBXVersion::generateUUIDv4();
             }
 
             if (!$settings->save()) {
