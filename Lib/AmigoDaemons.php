@@ -392,7 +392,7 @@ class AmigoDaemons extends Injectable
             'host' => '127.0.0.1',
             'port' => intval(PbxSettings::getValueByKey('AMIPort')),
         ];
-        $UID = md5($this->module_settings['asterisk_uid']);
+        $UID = $this->module_settings['asterisk_uid'];
 
         $credDir = "{$this->dirs['storeDir']}/asterisk/{$UID}";
         Util::mwMkdir($credDir);
