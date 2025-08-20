@@ -145,7 +145,7 @@ class GetController extends ModulesControllerBase
         }
 
         $this->response->setJsonContent($resultTable);
-        $this->response->send();
+        $this->response->sendRaw();
     }
 
     /**
@@ -238,7 +238,7 @@ class GetController extends ModulesControllerBase
         }
 
         $this->response->setJsonContent($extensionTable);
-        $this->response->send();
+        $this->response->sendRaw();
     }
 
      /**
