@@ -266,7 +266,7 @@ class GetController extends ModulesControllerBase
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         curl_setopt($curl, CURLOPT_URL, $statusUrl);
-        
+
         // Add authorization header
         $headers = ["Authorization: Token {$authorizationToken}"];
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
@@ -278,39 +278,85 @@ class GetController extends ModulesControllerBase
             $data = null;
         }
         curl_close($curl);
-        
-        // Check if we have a valid response
-        if ($data !== null && array_key_exists('result', $data)) {
-            // Check if main status is ok
-            if (isset($data['result']['status']) && $data['result']['status'] === 'ok') {
-                $res->success = true;
-                $res->data['statuses'] = $data['result'];
-                return $res;
+
+        // Check if we have a valid response with the new format
+        if ($data !== null && isset($data['ok'], $data['result']) && is_array($data['result'])) {
+            // Store the services statuses
+            $res->data['statuses'] = $data['result'];
+
+            // Check if core and asterisk services are running
+            $coreOk = false;
+            $asteriskOk = false;
+
+            foreach ($data['result'] as $service) {
+                if (isset($service['name'], $service['status'])) {
+                    if ($service['name'] === 'core' && $service['status'] === 'ok') {
+                        $coreOk = true;
+                    }
+                    if ($service['name'] === 'asterisk' && $service['status'] === 'ok') {
+                        $asteriskOk = true;
+                    }
+                }
             }
-            
-            // Otherwise process as before
-            if (is_array($data['result'])) {
-                $res->data['statuses'] = $data['result'];
+
+            // If core and asterisk are ok, check 1C status
+            if ($coreOk && $asteriskOk) {
+                $res->data['crm1c'] = $this->check1CStatus($webPort, $authorizationToken);
+                $res->success = isset($res->data['crm1c']['ok']) && $res->data['crm1c']['ok'] === true;
+            } else {
+                // Core or asterisk not running
+                $res->success = false;
+                $res->data['crm1c'] = ['ok' => false, 'error' => 'Core services not running'];
             }
-        } else {
-            $res->data['statuses'] = [[
-                'name' => AmigoDaemons::SERVICE_CORE,
-                'state' => 'unknown',
-            ]];
+
+            return $res;
         }
 
-        // Check individual services only if main status check failed
-        $res->success = true;
-        if (is_array($res->data['statuses'])) {
-            foreach ($res->data['statuses'] as $workerStatus) {
-                if (!$res->success) {
-                    break;
-                }
-                $res->success = array_key_exists('state', $workerStatus) && $workerStatus['state'] === 'ok';
-            }
-        }
-        
+        // Fallback for unknown response format
+        $res->data['statuses'] = [[
+            'name' => AmigoDaemons::SERVICE_CORE,
+            'status' => 'unknown',
+        ]];
+        $res->data['crm1c'] = ['ok' => false, 'error' => 'Unknown response format'];
+        $res->success = false;
+
         return $res;
+    }
+
+    /**
+     * Check 1C integration status.
+     *
+     * @param string $webPort The web port for the request
+     * @param string $authorizationToken The authorization token
+     * @return array The 1C status response
+     */
+    private function check1CStatus(string $webPort, string $authorizationToken): array
+    {
+        $checkUrl = "http://127.0.0.1:{$webPort}/check";
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_URL, $checkUrl);
+
+        // Add authorization header
+        $headers = ["Authorization: Token {$authorizationToken}"];
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+        try {
+            $response = curl_exec($curl);
+            $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            curl_close($curl);
+
+            if ($httpCode === 200) {
+                $data = json_decode($response, true);
+                return $data ?? ['ok' => false, 'error' => 'Invalid JSON response'];
+            }
+
+            return ['ok' => false, 'code' => $httpCode, 'error' => 'HTTP error: ' . $httpCode];
+        } catch (Throwable $e) {
+            curl_close($curl);
+            return ['ok' => false, 'error' => $e->getMessage()];
+        }
     }
 
     /**

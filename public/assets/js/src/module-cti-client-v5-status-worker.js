@@ -76,50 +76,56 @@ const moduleCTIClientV5ConnectionCheckWorker = {
 						}
 					}
 				},
-				onSuccess() {
-					moduleCTIClientV5ConnectionCheckWorker.changeStatus('Connected');
-					moduleCTIClientV5ConnectionCheckWorker.errorCounts = 0;
+				onSuccess(response) {
+					// Check if we have valid data
+					if (typeof (response.data) !== 'undefined'
+						&& typeof (response.data.statuses) !== 'undefined'
+						&& typeof (response.data.crm1c) !== 'undefined'
+					) {
+						let coreOk = false;
+						let asteriskOk = false;
+
+						// Check core and asterisk status
+						$.each(response.data.statuses, (key, value) => {
+							if (typeof (value.name) !== 'undefined' && typeof (value.status) !== 'undefined') {
+								if (value.name === 'core' && value.status === 'ok') {
+									coreOk = true;
+								}
+								if (value.name === 'asterisk' && value.status === 'ok') {
+									asteriskOk = true;
+								}
+							}
+						});
+
+						// Determine status based on core, asterisk and 1C
+						if (coreOk && asteriskOk) {
+							if (response.data.crm1c.ok === true) {
+								// All systems operational
+								moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectedTo1C');
+								moduleCTIClientV5ConnectionCheckWorker.errorCounts = 0;
+							} else {
+								// Core services ok, but 1C not connected
+								moduleCTIClientV5ConnectionCheckWorker.changeStatus('WaitingFor1C');
+								moduleCTIClientV5ConnectionCheckWorker.errorCounts = 0;
+							}
+						} else {
+							// Core or asterisk not running
+							moduleCTIClientV5ConnectionCheckWorker.errorCounts += 1;
+							if (moduleCTIClientV5ConnectionCheckWorker.errorCounts < 30) {
+								moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionProgress');
+							} else {
+								moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionError');
+							}
+						}
+					} else {
+						moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionError');
+					}
 					window.clearTimeout(moduleCTIClientV5ConnectionCheckWorker.timeoutHandle);
 				},
 				onFailure(response) {
-					if (Object.keys(response).length > 0
-						&& response.result === false
-						&& typeof (response.data) !== 'undefined'
-					) {
-						moduleCTIClientV5ConnectionCheckWorker.errorCounts += 1;
-						if (typeof (response.data) !== 'undefined'
-							&& typeof (response.data.statuses) !== 'undefined'
-						) {
-							let countHealthy = 0;
-							let status1C = 'undefined';
-
-							$.each(response.data.statuses, (key, value) => {
-								if (typeof (value.name) !== 'undefined'
-									&& value.state === 'ok'){
-									countHealthy++;
-								}
-								if (typeof (value.name) !== 'undefined'
-									&& value.name === 'crm-1c') {
-									status1C = value.state;
-								}
-							});
-							if (status1C !== 'ok' && countHealthy === 6 ) {
-								if (moduleCTIClientV5ConnectionCheckWorker.$webServiceToggle.checkbox('is checked')) {
-									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionTo1CError');
-								} else {
-									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionTo1CWait');
-								}
-							} else if (countHealthy < 6) {
-								if (moduleCTIClientV5ConnectionCheckWorker.errorCounts < 30) {
-									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionProgress');
-								} else {
-									moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionError');
-								}
-							}
-
-						} else { // Unknown
-							moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionError');
-						}
+					moduleCTIClientV5ConnectionCheckWorker.errorCounts += 1;
+					if (moduleCTIClientV5ConnectionCheckWorker.errorCounts < 30) {
+						moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionProgress');
 					} else {
 						moduleCTIClientV5ConnectionCheckWorker.changeStatus('ConnectionError');
 					}
@@ -141,6 +147,16 @@ const moduleCTIClientV5ConnectionCheckWorker = {
 			.removeClass('red');
 
 		switch (status) {
+			case 'ConnectedTo1C':
+				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus
+					.addClass('green')
+					.html(globalTranslate.mod_cti_ConnectedTo1C);
+				break;
+			case 'WaitingFor1C':
+				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus
+					.addClass('yellow')
+					.html(globalTranslate.mod_cti_WaitingFor1C);
+				break;
 			case 'Connected':
 				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus
 					.addClass('green')
@@ -156,20 +172,10 @@ const moduleCTIClientV5ConnectionCheckWorker = {
 					.addClass('yellow')
 					.html(`<i class="spinner loading icon"></i>${globalTranslate.mod_cti_ConnectionProgress}`);
 				break;
-			case 'ConnectionTo1CWait':
-				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus
-					.addClass('yellow')
-					.html(`<i class="spinner loading icon"></i>${globalTranslate.mod_cti_ConnectionWait}`);
-				break;
-			case 'ConnectionTo1CError':
-				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus
-					.addClass('yellow')
-					.html(`<i class="spinner loading icon"></i>${globalTranslate.mod_cti_ConnectionTo1CError}`);
-				break;
 			case 'ConnectionError':
 				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus
 					.addClass('red')
-					.html(`<i class="spinner loading icon"></i>${globalTranslate.mod_cti_ConnectionError}`);
+					.html(globalTranslate.mod_cti_ConnectionError);
 				break;
 			case 'Updating':
 				moduleCTIClientV5ConnectionCheckWorker.$moduleStatus

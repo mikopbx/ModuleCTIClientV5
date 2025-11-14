@@ -39,4 +39,6 @@ return [
     'mod_cti_ConnectionWait' => 'Ожидание подключения',
     'mod_cti_ConnectionTo1CError' => 'Ошибка подключения к 1С',
     'mod_cti_ConnectionError' => 'Ошибка подключения',
+    'mod_cti_ConnectedTo1C' => 'Модуль подключен к 1С',
+    'mod_cti_WaitingFor1C' => 'Ожидаем связи с 1С',
 ];
