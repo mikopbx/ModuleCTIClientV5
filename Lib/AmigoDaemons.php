@@ -157,6 +157,37 @@ class AmigoDaemons extends Injectable
     }
 
     /**
+     * Creates a backup of log file before overwriting.
+     *
+     * @param string $logFile Path to the log file
+     * @param int $maxBackups Maximum number of backups to keep
+     * @return void
+     */
+    private function backupLogFile(string $logFile, int $maxBackups = 9): void
+    {
+        if (!file_exists($logFile) || filesize($logFile) === 0) {
+            return;
+        }
+
+        // Rotate existing backups (log.8 -> log.9, log.7 -> log.8, etc.)
+        for ($i = $maxBackups - 1; $i >= 1; $i--) {
+            $backupFile = $logFile . '.' . $i;
+            if (file_exists($backupFile)) {
+                rename($backupFile, $logFile . '.' . ($i + 1));
+            }
+        }
+
+        // Remove oldest backup if exists
+        $oldestBackup = $logFile . '.' . $maxBackups;
+        if (file_exists($oldestBackup)) {
+            unlink($oldestBackup);
+        }
+
+        // Create new backup
+        copy($logFile, $logFile . '.1');
+    }
+
+    /**
      * Starts or restarts all services.
      *
      * @param bool $restart Whether to restart the services.
@@ -180,12 +211,14 @@ class AmigoDaemons extends Injectable
             if ($restart) {
                 $this->stopAllServices();
             }
+            $logFile = $this->dirs['logDir'] . '/core_process.log';
+            $this->backupLogFile($logFile);
             Processes::processWorker(
                 "{$this->dirs['binDir']}/" . self::SERVICE_CORE,
                 "-c {$this->dirs['confDir']}/config.json",
                 self::SERVICE_CORE,
                 'start',
-                $this->dirs['logDir'] . '/core_process.log'
+                $logFile
             );
         } else {
             $this->stopAllServices();
