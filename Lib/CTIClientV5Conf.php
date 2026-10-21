@@ -19,72 +19,142 @@
 
 namespace Modules\ModuleCTIClientV5\Lib;
 
-use MikoPBX\Common\Models\PbxSettings;
+use MikoPBX\Core\System\PBX;
+use MikoPBX\Core\System\System;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
+use Modules\ModuleCTIClientV5\Lib\RestAPI\Controllers\GetController;
+use Modules\ModuleCTIClientV5\Models\ModuleCTIClientV5;
 
 class CTIClientV5Conf extends ConfigClass
 {
+   
+    public const MODULE_AMI_USER = 'cti_v5_amid_client';
 
     /**
-     * Receive information about mikopbx main database changes
+     * Будет вызван после старта asterisk.
+     */
+    public function onAfterPbxStarted(): void
+    {
+        $amigoDaemons = new AmigoDaemons();
+        $amigoDaemons->startAllServices();
+    }
+
+    /**
+     * Обработчик события изменения данных в базе настроек mikopbx.db.
      *
-     * @param mixed $data
+     * @param $data
      */
     public function modelsEventChangeData($data): void
     {
-        // f.e. if somebody changes PBXLanguage, we will restart all workers
-        if (
-            $data['model'] === PbxSettings::class
-            && $data['recordId'] === 'PBXLanguage'
-        ) {
-            $templateMain = new CTIClientV5Main();
-            $templateMain->startAllServices(true);
+        if ($data['model'] === ModuleCTIClientV5::class) {
+
+            $amigoDaemons = new AmigoDaemons();
+            // Reset config to default and restart services
+            if (in_array('reset_settings', $data['changedFields'])) {    
+                $module_settings = ModuleCTIClientV5::findFirst();
+                if ($module_settings !== null and intval($module_settings->reset_settings) === 1) {
+                    $module_settings->reset_settings = '0';
+                    $module_settings->save();
+                    if (file_exists($amigoDaemons->config_file)) {
+                        unlink($amigoDaemons->config_file);
+                        return; //Config will be generated again after save settings
+                    }
+                }
+            }
+            // Restart services
+            PBX::dialplanReload();   
+            $amigoDaemons->startAllServices(true);
         }
     }
 
     /**
-     * Returns module workers to start it at WorkerSafeScriptCore
+     * Генератор секции пиров для manager.conf
      *
-     * @return array
+     *
+     * @return string
      */
-    public function getModuleWorkers(): array
+    public function generateManagerConf(): string
     {
-        return [
-            [
-                'type'   => WorkerSafeScriptsCore::CHECK_BY_BEANSTALK,
-                'worker' => WorkerCTIClientV5Main::class,
-            ],
-            [
-                'type'   => WorkerSafeScriptsCore::CHECK_BY_AMI,
-                'worker' => WorkerCTIClientV5AMI::class,
-            ],
+        $module_settings = ModuleCTIClientV5::findFirst();
+        if ($module_settings === null) {
+            return '';
+        }
+        $arr_params  = [
+            'AgentCalled',
+            'AttendedTransfer',
+            'BlindTransfer',
+            'Bridge',
+            'BridgeEnter',
+            'BridgeLeave',
+            'BridgeMerge',
+            'Cdr',
+            'ChanSpyStart',
+            'ContactStatus',
+            'ContactStatusDetail',
+            'Dial',
+            'DialBegin',
+            'DialEnd',
+            'ExtensionStatus',
+            'Hangup',
+            'Hold',
+            'Masquerade',
+            'MeetmeEnd',
+            'MeetmeJoin',
+            'MeetmeLeave',
+            'MeetmeTalking',
+            'MessageWaiting',
+            'MusicOnHold',
+            'MusicOnHoldStart',
+            'NewCallerid',
+            'Newchannel',
+            'Newstate',
+            'OriginateResponse',
+            'ParkedCall',
+            'ParkedCallGiveUp',
+            'ParkedCallTimeOut',
+            'UnParkedCall',
+            'Unhold',
+            'PeerEntry',
+            'Pickup',
+            'Rename',
+            'UserEvent',
+            'DataGetTree',
+            'QueueCallerJoin',
+            'QueueCallerLeave',
+            'QueueMember',
+            'QueueStatusComplete'
         ];
+        $managerUser = self::MODULE_AMI_USER;
+        $conf        = "[{$managerUser}]" . PHP_EOL;
+        $conf        .= "secret={$module_settings->ami_password}" . PHP_EOL;
+        $conf        .= 'deny=0.0.0.0/0.0.0.0' . PHP_EOL;
+        $conf        .= 'permit=127.0.0.1/255.255.255.255' . PHP_EOL;
+        $conf        .= 'read=agent,call,cdr,user,system' . PHP_EOL;
+        $conf        .= 'write=system,call,originate,reporting' . PHP_EOL;
+        $conf        .= 'eventfilter=!UserEvent: CdrConnector' . PHP_EOL;
+        $conf        .= 'eventfilter=Event: (' . implode('|', $arr_params) . ')' . PHP_EOL;
+        $conf        .= PHP_EOL;
+
+        return $conf;
     }
 
+
     /**
-     *  Process CoreAPI requests under root rights
+     * Process CoreAPI requests under root rights
      *
      * @param array $request
      *
      * @return PBXApiResult An object containing the result of the API call.
+     * @throws \Exception
      */
     public function moduleRestAPICallback(array $request): PBXApiResult
     {
-        $res    = new PBXApiResult();
+        $res            = new PBXApiResult();
         $res->processor = __METHOD__;
-        $action = strtoupper($request['action']);
+        $action         = strtoupper($request['action']);
         switch ($action) {
-            case 'CHECK':
-                $templateMain = new CTIClientV5Main();
-                $res          = $templateMain->checkModuleWorkProperly();
-                break;
-            case 'RELOAD':
-                $templateMain = new CTIClientV5Main();
-                $templateMain->startAllServices(true);
-                $res->success = true;
-                break;
             default:
                 $res->success    = false;
                 $res->messages[] = 'API action not found in moduleRestAPICallback ModuleCTIClientV5';
@@ -93,29 +163,170 @@ class CTIClientV5Conf extends ConfigClass
         return $res;
     }
 
+    /**
+     * Returns array of additional routes for PBXCoreREST interface from module
+     *
+     * [ControllerClass, ActionMethod, RequestTemplate, HttpMethod, RootUrl, NoAuth ]
+     *
+     * @return array
+     * @example
+     *  [[GetController::class, 'callAction', '/pbxcore/api/backup/{actionName}', 'get', '/', false],
+     */
+    public function getPBXCoreRESTAdditionalRoutes(): array
+    {
+        $routes = [
+            [GetController::class, 'getModuleStatusAction',         '/pbxcore/api/module-cti-client-v5/getModuleStatus', 'get', '/', true],
+            [GetController::class, 'getExtensionsAction',    '/pbxcore/api/module-cti-client-v5/getExtensions', 'get', '/', true],
+            [GetController::class, 'getIdMatchNamesListAction',    '/pbxcore/api/module-cti-client-v5/getIdMatchNamesList', 'get', '/', true],
+            [GetController::class, 'regenerateAuthorizationTokenAction',    '/pbxcore/api/module-cti-client-v5/regenerateAuthorizationToken', 'get', '/', true],
+        ];
+        return $routes;
+    }
 
     /**
-     * Modifies the system menu.
-     * @see https://docs.mikopbx.com/mikopbx-development/module-developement/module-class#onbeforeheadermenushow
+     * Returns module workers to start it at WorkerSafeScript
      *
-     * @param array $menuItems The menu items for modifications.
+     * @return array
+     */
+    public function getModuleWorkers(): array
+    {
+        return [
+            [
+                'type'   => WorkerSafeScriptsCore::CHECK_BY_PID_NOT_ALERT,
+                'worker' => WorkerSafeScript::class,
+            ],
+            [
+                'type'   => WorkerSafeScriptsCore::CHECK_BY_PID_NOT_ALERT,
+                'worker' => WorkerLogRotate::class,
+            ],
+        ];
+    }
+
+    /**
+     * Returns array of additional firewall rules for module
+     *
+     * @return array
+     */
+    public function getDefaultFirewallRules(): array
+    {
+        return [
+            'ModuleCTIClientV5' => [
+                'rules'     => [
+                    [
+                        'portfrom'    => AmigoDaemons::getNatsHttpPort(),
+                        'portto'      => AmigoDaemons::getNatsHttpPort(),
+                        'protocol'    => 'tcp',
+                        'name'        => 'CoreHttpPort',
+                        'portFromKey' => '',
+                        'portToKey'   => '',
+                    ],
+                ],
+                'action'    => 'allow',
+                'shortName' => 'CTI client 5.0',
+            ],
+        ];
+    }
+
+    /**
+     * Kills all module daemons
+     *
+     */
+    public function onAfterModuleDisable(): void
+    {
+        System::invokeActions(['manager' => 0]);
+        $amigoDaemons = new AmigoDaemons();
+        $amigoDaemons->stopAllServices();
+        PBX::dialplanReload();
+    }
+
+    /**
+     * Process after enable action in web interface
      *
      * @return void
      */
-    public function onBeforeHeaderMenuShow(array &$menuItems):void
+    public function onAfterModuleEnable(): void
     {
-        $menuItems['module_template_AdditionalMenuItem']=[
-            'caption'=>'module_template_AdditionalMenuItem',
-            'iconclass'=>'',
-            'submenu'=>[
-                '/modulecticlient-v5/additional-page'=>[
-                    'caption' => 'module_template_AdditionalSubMenuItem',
-                    'iconclass' => 'gear',
-                    'action' => 'index',
-                    'param' => '',
-                    'style' => '',
-                ],
-            ]
-        ];
+        System::invokeActions(['manager' => 0]);
+        $amigoDaemons = new AmigoDaemons();
+        $amigoDaemons->startAllServices();
+        PBX::dialplanReload();
     }
+
+    /**
+     * Кастомизация входящего контекста для конкретного маршрута.
+     *
+     * @param $rout_number
+     *
+     * @return string
+     */
+    public function generateIncomingRoutBeforeDial($rout_number): string
+    {
+        $conf = '';
+        $conf .= "\t" . 'same => n,UserEvent(InterceptionCTIv5,CALLERID: ${CALLERID(num)},chan1c: ${CHANNEL},FROM_DID: ${FROM_DID})' . "\n\t";
+
+        $module_settings = ModuleCTIClientV5::findFirst();
+        if ($module_settings === null
+            || intval($module_settings->setup_caller_id) === 1) {
+            if (intval($module_settings->transliterate_caller_id) === 1) {
+                $agiFile = "set-caller-id-with-transliteration.php";
+            } else {
+                $agiFile = "set-caller-id.php";
+            }
+            $conf .= "\t" . "same => n,AGI({$this->moduleDir}/agi-bin/{$agiFile})" . "\n\t";
+        }
+
+        // Перехват на ответственного.
+        return $conf;
+    }
+
+    /**
+     * Генерация дополнительных контекстов.
+     *
+     * @return string
+     */
+    public function extensionGenContexts(): string
+    {
+        $PBXRecordCalls = $this->generalSettings['PBXRecordCalls'];
+        $rec_options    = ($PBXRecordCalls === '1') ? 'r' : '';
+        $conf           = "[miko_cti_v5]\n";
+        $conf           .= 'exten => 10000507,1,Answer()' . "\n\t";
+        $conf           .= 'same => n,Set(CHANNEL(hangup_handler_wipe)=hangup_handler_meetme,s,1)' . "\n\t";
+        $conf           .= 'same => n,AGI(cdr_connector.php,meetme_dial)' . "\n\t";
+        $conf           .= 'same => n,Set(CALLERID(num)=Conference_Room)' . "\n\t";
+        $conf           .= 'same => n,Set(CALLERID(name)=${mikoconfcid})' . "\n\t";
+        $conf           .= 'same => n,Meetme(${mikoidconf},' . $rec_options . '${mikoparamconf})' . "\n\t";
+        $conf           .= 'same => n,Hangup()' . "\n\n";
+
+        $conf .= '[miko-cti-v5-originate]' . "\n";
+        $conf .= 'exten => _[0-9*#+a-zA-Z]!,1,Set(pt1c_cid=${origCid})' . "\n\t";
+        $conf .= 'same => n,Goto(internal-originate,${EXTEN},1)' . "\n\n";
+
+        $conf .= '[miko-cti-v5-goto]' . "\n";
+        $conf .= 'exten => _[0-9*#+a-zA-Z]!,1,Wait(0.2)' . "\n\t";
+        $conf .= 'same => n,ExecIf($["${mikoContext}x" = "x"]?Set(mikoContext=all_peers))' . "\n\t";
+        $conf .= 'same => n,ExecIf($["${ORIGINATE_SRC_CHANNEL}x" != "x"]?ChannelRedirect(${ORIGINATE_SRC_CHANNEL},${mikoContext},${EXTEN},1))' . "\n\t";
+        $conf .= 'same => n,Hangup' . "\n";
+        $conf .= 'exten => failed,1,Hangup' . "\n";
+        $conf .= 'exten => h,1,Hangup' . "\n\n";
+
+        $conf .= '[miko-cti-v5-interception-bridge]' . "\n";
+        $conf .= 'exten => _[0-9*#+a-zA-Z]!,1,Set(pt1c_cid=${origCid})' . "\n\t";
+        $conf .= 'same => n,Goto(interception-bridge,${EXTEN},1)' . "\n";
+        $conf .= 'exten => h,1,Hangup' . "\n\n";
+
+        $conf .= '[miko-cti-v5-spy]' . "\n";
+        $conf .= 'exten => _[0-9*#+a-zA-Z]!,1,Answer()' . "\n\t";
+        $conf .= 'same => n,ExecIf($["${SPY_ARGS}x" != "x"]?ChanSpy(${DST_CHANNEL},${SPY_ARGS}))' . "\n\t";
+        $conf .= 'same => n,Hangup' . "\n\n";
+        $conf .= 'exten => h,1,Hangup' . "\n\n";
+
+        $conf .= '[miko-cti-v5-playback-mp3]' . "\n";
+        $conf .= 'exten => _[0-9*#+a-zA-Z]!,1,Answer()' . "\n\t";
+        $conf .= 'same => n,ExecIf($["${FILENAME}x" != "x"]?MP3Player(${FILENAME}))' . "\n\t";
+        $conf .= 'same => n,Hangup' . "\n";
+        $conf .= 'exten => h,1,Hangup' . "\n\n";
+
+        return $conf;
+    }
+
 }

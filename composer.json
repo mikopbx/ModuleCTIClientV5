@@ -1,5 +1,5 @@
 {
-    "name": "mikopbx/moduletemplate",
+    "name": "mikopbx/modulecticlientv5",
     "description": "ModuleCTIClientV5",
     "require": {
         "php": "^7.4 || ^8.0",
@@ -29,7 +29,7 @@
         "wiki": "https://wiki.mikopbx.com",
         "issues": "https://github.com/mikopbx/Core/issues",
         "source": "https://github.com/mikopbx/Core",
-        "forum": "https://qa.mikopbx.ru",
+        "forum": "https://forum.mikopbx.ru",
         "chat": "https://t.me/mikopbx_dev"
     },
     "authors": [

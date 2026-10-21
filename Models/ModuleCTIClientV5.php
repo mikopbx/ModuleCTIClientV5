@@ -19,118 +19,80 @@
 
 namespace Modules\ModuleCTIClientV5\Models;
 
-use MikoPBX\Common\Models\Providers;
 use MikoPBX\Modules\Models\ModulesModelsBase;
-use Phalcon\Mvc\Model\Relation;
 
+
+/**
+ * Class ModuleCTIClientV5
+ *
+ * Represents the CTI Client module.
+ */
 class ModuleCTIClientV5 extends ModulesModelsBase
 {
 
     /**
      * @Primary
      * @Identity
-     * @Column(type="integer", nullable=false)
+     * @Column(type='integer', nullable=false)
      */
     public $id;
 
     /**
-     * Text field example
+     * @var string|null Debug mode of the module
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', length=1, nullable=true, default='0')
      */
-    public $text_field;
+    public ?string $debug_mode = '0';
 
     /**
-     * TextArea field example
+     * @var string|null AMI password for the created manager
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $text_area_field;
+    public ?string $ami_password = '';
 
     /**
-     * Password field example
+     * @var string|null Asterisk UID for the created manager
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $password_field;
+    public ?string $asterisk_uid = '';
 
     /**
-     * Integer field example
+     * @var string|null Auth token for auto-configuration
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type='string', nullable=true, default='')
      */
-    public $integer_field;
+    public ?string $authorization_token = '';
 
     /**
-     * CheckBox
+     * @var string|null Whether to set CallerID based on data from 1C
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type='string', length=1, nullable=true, default='0')
      */
-    public $checkbox_field;
+    public ?string $setup_caller_id = '1';
 
     /**
-     * Toggle
+     * @var string|null Whether to transliterate CallerID
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type='string', length=1, nullable=true, default='0')
      */
-    public $toggle_field;
+    public ?string $transliterate_caller_id = '0';
 
     /**
-     * Dropdown menu
+     * @var string|null Whether to reset the settings
      *
-     * @Column(type="string", nullable=true)
+     * @Column(type='string', length=1, nullable=true, default='0')
      */
-    public $dropdown_field;
+    public ?string $reset_settings = '0';
 
     /**
-     * Returns dynamic relations between module models and common models
-     * MikoPBX check it in ModelsBase after every call to keep data consistent
-     *
-     * There is example to describe the relation between Providers and ModuleCTIClientV5 models
-     *
-     * It is important to duplicate the relation alias on message field after Models\ word
-     *
-     * @param $calledModelObject
-     *
+     * Initialize model for module
      * @return void
      */
-    public static function getDynamicRelations(&$calledModelObject): void
-    {
-//        if (is_a($calledModelObject, Providers::class)) {
-//            $calledModelObject->belongsTo(
-//                'id',
-//                ModuleCTIClientV5::class,
-//                'dropdown_field',
-//                [
-//                    'alias'      => 'ModuleCTIClientV5Provider',
-//                    'foreignKey' => [
-//                        'allowNulls' => 0,
-//                        'message'    => 'Models\ModuleCTIClientV5Provider',
-//                        'action'     => Relation::ACTION_RESTRICT
-//
-//                    ],
-//                ]
-//            );
-//        }
-    }
-
     public function initialize(): void
     {
         $this->setSource('m_ModuleCTIClientV5');
-        $this->hasOne(
-            'dropdown_field',
-            Providers::class,
-            'id',
-            [
-                'alias'      => 'Providers',
-                'foreignKey' => [
-                    'allowNulls' => true,
-                    'action'     => Relation::NO_ACTION,
-                ],
-            ]
-        );
         parent::initialize();
     }
-
-
 }

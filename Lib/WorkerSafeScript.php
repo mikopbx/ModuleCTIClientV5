@@ -1,7 +1,7 @@
 <?php
 /*
  * MikoPBX - free phone system for small business
- * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
+ * Copyright © 2017-2025 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,51 +19,23 @@
 
 namespace Modules\ModuleCTIClientV5\Lib;
 
-
 use MikoPBX\Common\Handlers\CriticalErrorsHandler;
-use MikoPBX\Core\System\BeanstalkClient;
 use MikoPBX\Core\Workers\WorkerBase;
 
 require_once 'Globals.php';
 
-/**
- * Class ModuleCTIClientV5
- */
-class WorkerCTIClientV5Main extends WorkerBase
+class WorkerSafeScript extends WorkerBase
 {
-    protected CTIClientV5Main $templateMain;
-
-    /**
-     * Start point for the worker.
-     *
-     * @param array $argv The command line arguments.
-     * @return void
-     */
-    public function start(array $argv): void
+    public function start($argv): void
     {
-        $this->templateMain = new CTIClientV5Main();
-        $client = new BeanstalkClient(self::class);
-        $client->subscribe($this->makePingTubeName(self::class), [$this, 'pingCallBack']);
-        $client->subscribe(self::class, [$this, 'beanstalkCallback']);
-        while (true) {
-            $client->wait();
-        }
+        $cti = new AmigoDaemons();
+        $cti->startAllServices();
     }
 
-    /**
-     * Parser for received Beanstalk message
-     *
-     * @param BeanstalkClient $message
-     */
-    public function beanstalkCallback(BeanstalkClient $message): void
-    {
-        $receivedMessage = json_decode($message->getBody(), true);
-        $this->templateMain->processBeanstalkMessage($receivedMessage);
-    }
 }
 
 // Start worker process
-$workerClassname = WorkerCTIClientV5Main::class;
+$workerClassname = WorkerSafeScript::class;
 if (isset($argv) && count($argv) > 1) {
     cli_set_process_title($workerClassname);
     try {
